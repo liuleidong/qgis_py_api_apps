@@ -9,7 +9,13 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.setGeometry(400, 200, 800, 600)
-        self.label = QLabel(Qgis.releaseName(),self)
+        self.centralwidget = QWidget(self)
+        self.centralwidget.setObjectName("centralwidget")
+        self.setCentralWidget(self.centralwidget)
+        self.label = QLabel(Qgis.releaseName(), self)
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.label)
+        self.centralwidget.setLayout(self.layout)
 
 
 def main():
