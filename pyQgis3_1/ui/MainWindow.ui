@@ -52,7 +52,7 @@
     <addaction name="actiongpx"/>
     <addaction name="actionSpatiaLite"/>
     <addaction name="actionMySQL"/>
-    <addaction name="actionQFS"/>
+    <addaction name="actionWFS"/>
    </widget>
    <widget class="QMenu" name="menuRaster">
     <property name="title">
@@ -118,7 +118,7 @@
     <string>MySQL</string>
    </property>
   </action>
-  <action name="actionQFS">
+  <action name="actionWFS">
    <property name="text">
     <string>WFS</string>
    </property>

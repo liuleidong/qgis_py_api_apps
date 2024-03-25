@@ -1,7 +1,7 @@
 import os
 
-from qgis.PyQt.QtWidgets import QMainWindow
-from qgis.core import QgsProject,QgsLayerTreeModel,QgsVectorLayer,QgsDataSourceUri
+from qgis.PyQt.QtWidgets import QMainWindow,QMessageBox
+from qgis.core import QgsProject,QgsLayerTreeModel,QgsVectorLayer,QgsDataSourceUri,QgsRasterLayer
 from qgis.gui import QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge,QgisInterface
 from ui.MainWindow import Ui_MainWindow
 from PyQt5.QtWidgets import QVBoxLayout,QHBoxLayout
@@ -40,17 +40,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionpostgis.triggered.connect(self.postgis)
         self.actioncsv.triggered.connect(self.csv)
         self.actiongpx.triggered.connect(self.gpx)
+        self.actionSpatiaLite.triggered.connect(self.spatiaLite)
+        self.actionMySQL.triggered.connect(self.mysql)
+        self.actionWFS.triggered.connect(self.wfs)
+        self.actionTif.triggered.connect(self.tiff)
+        self.actionGeopackage.triggered.connect(self.gpkg)
+        self.actionPostGIS.triggered.connect(self.raster_postgis)
+        self.actionWCS.triggered.connect(self.wcs)
 
     def iface(self):
         # iface只能在QGis中使用
+        QMessageBox.information(self, r'Tip', r'iface只能在QGis中使用',
+                                QMessageBox.Yes)  # 2
         # TypeError: qgis._gui.QgisInterface represents a C++ abstract class and cannot be instantiated
-        iface = QgisInterface()
-        vlayer = iface.addvectorLayer("../python_cookbook/airports.shp", "airports", "ogr")
-        if not vlayer:
-            self.statusbar.showMessage("Layer failed to load!")
-        else:
-            self.statusbar.showMessage("Layer load Done!")
-            QgsProject.instance().addMapLayer(vlayer)
+        # iface = QgisInterface()
+        # vlayer = iface.addvectorLayer("../python_cookbook/airports.shp", "airports", "ogr")
+        # if not vlayer:
+        #     self.statusbar.showMessage("Layer failed to load!")
+        # else:
+        #     self.statusbar.showMessage("Layer load Done!")
+    #     QgsProject.instance().addMapLayer(vlayer)
 
     def gdal_shapefile(self):
         vlayer = QgsVectorLayer("../python_cookbook/airports.shp", "airports", "ogr")
@@ -87,6 +96,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QgsProject.instance().addMapLayer(vlayer)
 
     def postgis(self):
+
+        QMessageBox.information(self, r'Tip', r'修改数据库ip等信息才能正常显示',
+                                QMessageBox.Yes)  # 2
         # 需要实际数据库才能正常显示
         uri = QgsDataSourceUri()
         # set host name, port, database name, username and password
@@ -94,7 +106,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # set database schema, table name, geometry column and optionally
         # subset (WHERE clause)
         uri.setDataSource("public", "roads", "the_geom", "cityid = 2643", "primary_key_field")
-        vlayer = QgsVectorLayer(uri.uri(False), "layer name you like", "postgres")
+        vlayer = QgsVectorLayer(uri.uri(False), "postgis", "postgres")
         if not vlayer:
             self.statusbar.showMessage("Layer failed to load!")
         else:
@@ -106,7 +118,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         filepath = os.getcwd() + r'\..\python_cookbook\delimited_xy.csv'
         uri = "file:///{}?delimiter={}&xField={}&yField={}".format(filepath, ";", "x", "y")
         print(uri)
-        vlayer = QgsVectorLayer(uri, "layer name you like", "delimitedtext")
+        vlayer = QgsVectorLayer(uri, "csv", "delimitedtext")
         if not vlayer:
             self.statusbar.showMessage("Layer failed to load!")
         else:
@@ -117,9 +129,117 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 使用type区分不同类型
         # type可取值：track waypoint route
         uri = r'..\python_cookbook\layers.gpx?type=track'
-        vlayer = QgsVectorLayer(uri, "layer name you like", "gpx")
+        vlayer = QgsVectorLayer(uri, "gpx", "gpx")
         if not vlayer:
             self.statusbar.showMessage("Layer failed to load!")
         else:
             self.statusbar.showMessage("Layer load Done!")
             QgsProject.instance().addMapLayer(vlayer)
+
+    def spatiaLite(self):
+        uri = QgsDataSourceUri()
+        uri.setDatabase(r'..\python_cookbook\landuse.sqlite')
+        schema = ''
+        table = 'landuse'
+        geom_column = 'Geometry'
+        uri.setDataSource(schema, table, geom_column)
+
+        display_name = 'landuse'
+        vlayer = QgsVectorLayer(uri.uri(), display_name, 'spatialite')
+        if not vlayer:
+            self.statusbar.showMessage("Layer failed to load!")
+        else:
+            self.statusbar.showMessage("Layer load Done!")
+            QgsProject.instance().addMapLayer(vlayer)
+
+    def mysql(self):
+
+        QMessageBox.information(self, r'Tip', r'修改数据库ip等信息才能正常显示',
+                                QMessageBox.Yes)  # 2
+        # uri = "MySQL:dbname,host=localhost,port=3306,user=root,password=xxx|layername=my_table"
+        # vlayer = QgsVectorLayer(uri, "my table", "ogr")
+        # if not vlayer:
+        #     self.statusbar.showMessage("Layer failed to load!")
+        # else:
+        #     self.statusbar.showMessage("Layer load Done!")
+        #     QgsProject.instance().addMapLayer(vlayer)
+
+    def wfs(self):
+        uri = "https://demo.mapserver.org/cgi-bin/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=ms:cities"
+        vlayer = QgsVectorLayer(uri, "my wfs layer", "WFS")
+        if not vlayer:
+            self.statusbar.showMessage("Layer failed to load!")
+        else:
+            self.statusbar.showMessage("Layer load Done!")
+            QgsProject.instance().addMapLayer(vlayer)
+
+    def tiff(self):
+        # get the path to a tif file  e.g. /home/project/data/srtm.tif
+        path_to_tif = r"../python_cookbook/data/srtm.tif"
+        rlayer = QgsRasterLayer(path_to_tif, "SRTM layer name")
+        if not rlayer.isValid():
+            print("Layer failed to load!")
+        else:
+            self.statusbar.showMessage("Layer load Done!")
+            QgsProject.instance().addMapLayer(rlayer)
+
+    def gpkg(self):
+        # get the path to a geopackage  e.g. /home/project/data/data.gpkg
+        path_to_gpkg = os.getcwd() + r'\..\python_cookbook\sublayers.gpkg'
+        gpkg_raster_layer = "GPKG:" + path_to_gpkg + ":srtm"
+        rlayer = QgsRasterLayer(gpkg_raster_layer, "gpkg", "gdal")
+        if not rlayer.isValid():
+            print("Layer failed to load!")
+        else:
+            self.statusbar.showMessage("Layer load Done!")
+            QgsProject.instance().addMapLayer(rlayer)
+
+    def raster_postgis(self):
+        QMessageBox.information(self, r'Tip', r'修改数据库ip等信息才能正常显示',
+                                QMessageBox.Yes) 
+        # uri_config = {
+        #     # database parameters
+        #     'dbname': 'gis_db',  # The PostgreSQL database to connect to.
+        #     'host': 'localhost',  # The host IP address or localhost.
+        #     'port': '5432',  # The port to connect on.
+        #     'sslmode': QgsDataSourceUri.SslDisable,  # SslAllow, SslPrefer, SslRequire, SslVerifyCa, SslVerifyFull
+        #     # user and password are not needed if stored in the authcfg or service
+        #     'authcfg': 'QconfigId',  # The QGIS athentication database ID holding connection details.
+        #     'service': None,  # The PostgreSQL service to be used for connection to the database.
+        #     'username': None,  # The PostgreSQL user name.
+        #     'password': None,  # The PostgreSQL password for the user.
+        #     # table and raster column details
+        #     'schema': 'public',  # The database schema that the table is located in.
+        #     'table': 'my_rasters',  # The database table to be loaded.
+        #     'geometrycolumn': 'rast',  # raster column in PostGIS table
+        #     'sql': None,  # An SQL WHERE clause. It should be placed at the end of the string.
+        #     'key': None,  # A key column from the table.
+        #     'srid': None,  # A string designating the SRID of the coordinate reference system.
+        #     'estimatedmetadata': 'False',  # A boolean value telling if the metadata is estimated.
+        #     'type': None,  # A WKT string designating the WKB Type.
+        #     'selectatid': None,  # Set to True to disable selection by feature ID.
+        #     'options': None,  # other PostgreSQL connection options not in this list.
+        #     'enableTime': None,
+        #     'temporalDefaultTime': None,
+        #     'temporalFieldIndex': None,
+        #     'mode': '2',
+        #     # GDAL 'mode' parameter, 2 unions raster tiles, 1 adds tiles separately (may require user input)
+        # }
+        # # remove any NULL parameters
+        # uri_config = {key: val for key, val in uri_config.items() if val is not None}
+        # # get the metadata for the raster provider and configure the URI
+        # md = QgsProviderRegistry.instance().providerMetadata('postgresraster')
+        # uri = QgsDataSourceUri(md.encodeUri(uri_config))
+        #
+        # # the raster can then be loaded into the project
+        # rlayer = iface.addRasterLayer(uri.uri(False), "raster layer name", "postgresraster")
+
+    def wcs(self):
+        layer_name = 'modis'
+        url = "https://demo.mapserver.org/cgi-bin/wcs?identifier={}".format(layer_name)
+        rlayer = QgsRasterLayer(url, 'my wcs layer', 'wcs')
+        if not rlayer.isValid():
+            print("Layer failed to load!")
+        else:
+            self.statusbar.showMessage("Layer load Done!")
+            QgsProject.instance().addMapLayer(rlayer)

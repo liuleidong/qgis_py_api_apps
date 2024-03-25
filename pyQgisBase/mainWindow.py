@@ -1,9 +1,12 @@
 
-from qgis.PyQt.QtWidgets import QMainWindow
-from qgis.core import QgsProject,QgsLayerTreeModel
-from qgis.gui import QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge
-from ui.MainWindow import Ui_MainWindow
 from PyQt5.QtWidgets import QVBoxLayout,QHBoxLayout
+
+from qgis.PyQt.QtWidgets import QMainWindow
+from qgis.core import QgsProject,QgsLayerTreeModel,QgsVectorLayer
+from qgis.gui import QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge
+
+from ui.MainWindow import Ui_MainWindow
+from rightClickContextMenu import menuProvider
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -31,3 +34,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.gsLayerTreeView.setModel(self.gsLayerTreeModel)
         # synchronise the loaded project with the canvas
         self.gsLayerTreeBridge = QgsLayerTreeMapCanvasBridge(QgsProject.instance().layerTreeRoot(), self.gsMapCanvas, self)
+        #
+        self.rightMenu = menuProvider(self)
+        self.gsLayerTreeView.setMenuProvider(self.rightMenu)
+
+        vlayer = QgsVectorLayer("../python_cookbook/airports.shp", "airports", "ogr")
+        if not vlayer:
+            self.statusbar.showMessage("Layer failed to load!")
+        else:
+            self.statusbar.showMessage("Layer load Done!")
+            QgsProject.instance().addMapLayer(vlayer)
