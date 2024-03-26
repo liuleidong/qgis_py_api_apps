@@ -2,7 +2,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMenu, QMessageBox,QAction
 from qgis.gui import QgsLayerTreeViewMenuProvider, QgsLayerTreeView, QgsMapCanvas,QgsLayerTreeViewDefaultActions
-from qgis.core import QgsProject,QgsLayerTreeNode,QgsLayerTree,QgsLayerTreeGroup,QgsMapLayer,QgsLayerTreeLayer
+from qgis.core import QgsProject,QgsLayerTreeNode,QgsLayerTree,QgsLayerTreeGroup,QgsMapLayer,QgsLayerTreeLayer,QgsVectorLayer
 
 class menuProvider(QgsLayerTreeViewMenuProvider):
     def __init__(self, mainWindow, *args, **kwargs):
@@ -23,19 +23,30 @@ class menuProvider(QgsLayerTreeViewMenuProvider):
             else:
                 node = self.layerTreeView.index2node(idx)
                 if QgsLayerTree.isGroup(node):  #如果是组，显示对应菜单项目
-                    menu.addAction(self.actions.actionZoomToGroup(self.mapCanvas,menu))
-                    menu.addAction(self.actions.actionRemoveGroupOrLayer(menu))
-                    menu.addAction(self.actions.actionRenameGroupOrLayer())
-                    menu.addAction(self.actions.actionAddGroup(menu))
+                    self.actionZoomToGroup = self.actions.actionZoomToGroup(self.mapCanvas,menu)
+                    menu.addAction(self.actionZoomToGroup)
+                    self.actionRemoveGroupOrLayer = self.actions.actionRemoveGroupOrLayer(menu)
+                    menu.addAction(self.actionRemoveGroupOrLayer)
+                    self.actionRenameGroupOrLayer = self.actions.actionRenameGroupOrLayer()
+                    menu.addAction(self.actionRenameGroupOrLayer)
+                    self.actionAddGroup = self.actions.actionAddGroup(menu)
+                    menu.addAction(self.actionAddGroup)
                     if self.layerTreeView.selectedNodes(True).count() >= 2:
-                        menu.addAction(self.actions.actionGroupSelected(menu))
+                        self.actionGroupSelected = self.actions.actionGroupSelected(menu)
+                        menu.addAction(self.actionGroupSelected)
                 elif QgsLayerTree.isLayer(node):
                     # 如何拿到layer 并转换为vector/raster layer
                     layer: QgsMapLayer = node.layer()
-                    print(layer.isValid())
-
-                    menu.addAction(self.actions.actionZoomToLayer(self.mapCanvas, menu))
-
+                    if layer.isValid() and layer.isSpatial():
+                        self.actionZoomToLayers = self.actions.actionZoomToLayers(self.mapCanvas,menu)
+                        menu.addAction(self.actionZoomToLayers) #addAction直接传入self.actions.actionZoomToLayers(self.mapCanvas,menu)还不行，原因未知
+                    self.actionRemoveGroupOrLayer = self.actions.actionRemoveGroupOrLayer(menu)
+                    menu.addAction(self.actionRemoveGroupOrLayer)
+                    vlayer: QgsVectorLayer = layer
+                    if vlayer.isValid():
+                        self.actionShowFeatureCount = self.actions.actionShowFeatureCount(menu)
+                        menu.addAction(self.actionShowFeatureCount)
+                return menu
 
         except:
             print('menu error')
