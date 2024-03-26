@@ -1,10 +1,12 @@
 import os
 
+from PyQt5.QtWidgets import QVBoxLayout,QHBoxLayout
 from qgis.PyQt.QtWidgets import QMainWindow,QMessageBox
 from qgis.core import QgsProject,QgsLayerTreeModel,QgsVectorLayer,QgsDataSourceUri,QgsRasterLayer
 from qgis.gui import QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge,QgisInterface
+
 from ui.MainWindow import Ui_MainWindow
-from PyQt5.QtWidgets import QVBoxLayout,QHBoxLayout
+from rightClickContextMenu import menuProvider
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -32,7 +34,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.gsLayerTreeView.setModel(self.gsLayerTreeModel)
         # synchronise the loaded project with the canvas
         self.gsLayerTreeBridge = QgsLayerTreeMapCanvasBridge(QgsProject.instance().layerTreeRoot(), self.gsMapCanvas, self)
-        # connect actions to slot
+	#
+        self.rightMenu = menuProvider(self)
+        self.gsLayerTreeView.setMenuProvider(self.rightMenu)        
+	
+	# connect actions to slot
         self.actionQgisInterface.triggered.connect(self.iface)
         self.actionShapefile.triggered.connect(self.gdal_shapefile)
         self.actiondxf.triggered.connect(self.gdal_dxf)
