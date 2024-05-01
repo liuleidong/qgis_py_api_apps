@@ -1,5 +1,6 @@
 
 from PyQt5.QtWidgets import QVBoxLayout,QHBoxLayout
+from qgis.PyQt.QtCore import QVariant
 
 from qgis.PyQt.QtWidgets import QMainWindow
 from qgis.gui import QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge
@@ -209,10 +210,60 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # The only way to find the telephone number of a given person is to read from the beginning until you find it.
         index = QgsSpatialIndex()
         # index.addFeature(feat)
-        index.addFeature(vlayer.getFeatures())
+        index = QgsSpatialIndex(vlayer.getFeatures())
         # QgsSpatialIndexKDBush
         # 6.6. The QgsVectorLayerUtils class
         # feat = QgsVectorLayerUtils.createFeature(vlayer)
         # val = QgsVectorLayerUtils.getValues(vlayer, "NAME", selectedOnly=True)
         # 6.7.Creating Vector Layers
+        # 6.7.3. From an instance of QgsVectorLayer
+        #Memory provider is intended to be used mainly by plugin or 3rd party app developers.
+        #The provider supports string, int and double fields.
+        # create layer
+        vl = QgsVectorLayer("Point", "temporary_points", "memory")
+        pr = vl.dataProvider()
+
+        # add fields
+        pr.addAttributes([QgsField("name", QVariant.String),
+                          QgsField("age", QVariant.Int),
+                          QgsField("size", QVariant.Double)])
+        vl.updateFields()  # tell the vector layer to fetch changes from the provider
+
+        # add a feature
+        fet = QgsFeature()
+        fet.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(10, 10)))
+        fet.setAttributes(["Johny", 2, 0.3])
+        pr.addFeatures([fet])
+
+        # update layer's extent when new features have been added
+        # because change of extent in provider is not propagated to the layer
+        vl.updateExtents()
+        # show some stats
+        print("fields:", len(pr.fields()))
+        print("features:", pr.featureCount())
+        e = vl.extent()
+        print("extent:", e.xMinimum(), e.yMinimum(), e.xMaximum(), e.yMaximum())
+
+        # iterate over features
+        features = vl.getFeatures()
+        for fet in features:
+            print("F:", fet.id(), fet.attributes(), fet.geometry().asPoint())
+
+        #6.8.Appearance(Symbology) of Vector Layers
+        #When a vector layer is being rendered, the appearance of the data is given by renderer and symbols associated with the layer.
+        #Symbols are classes which take care of drawing of visual representation of features,
+        #while renderers determine what symbol will be used for a particular feature.
+        renderer = vlayer.renderer()
+        print("Type:", renderer.type())
+        print(QgsApplication.rendererRegistry().renderersList())
+        print(renderer.dump())
+        #6.8.1. Single Symbol Renderer
+        symbol = QgsMarkerSymbol.createSimple({'name': 'square', 'color': 'red'})
+        vlayer.renderer().setSymbol(symbol)
+        # show the change
+        vlayer.triggerRepaint()
+
+        # 6.8.4.Working with Symbols
+        # Every symbol consists of one or more symbol layers (classes derived from QgsSymbolLayer). The symbol layers do the actual rendering, the symbol class itself serves
+        # only as a container for the symbol layers.
         
