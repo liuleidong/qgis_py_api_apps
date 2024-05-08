@@ -1,6 +1,43 @@
 
 from PyQt5.QtWidgets import QVBoxLayout,QHBoxLayout
 
+import os
+
+from qgis.core import (
+qgsDoubleToString,
+    Qgis,
+    QgsGeometry,
+    QgsMapSettings,
+    QgsPrintLayout,
+    QgsMapSettings,
+    QgsMapRendererParallelJob,
+    QgsLayoutItemLabel,
+    QgsLayoutItemLegend,
+    QgsLayoutItemMap,
+    QgsLayoutItemPolygon,
+    QgsLayoutItemScaleBar,
+    QgsLayoutExporter,
+    QgsLayoutItem,
+    QgsLayoutPoint,
+    QgsLayoutSize,
+    QgsUnitTypes,
+    QgsProject,
+    QgsFillSymbol,
+    QgsAbstractValidityCheck,
+    check,
+)
+
+from qgis.PyQt.QtGui import (
+    QPolygonF,
+    QColor,
+)
+
+from qgis.PyQt.QtCore import (
+    QPointF,
+    QRectF,
+    QSize,
+)
+
 from qgis.PyQt.QtWidgets import QMainWindow
 from qgis.core import QgsProject,QgsLayerTreeModel,QgsVectorLayer
 from qgis.gui import QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge
@@ -44,3 +81,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.statusbar.showMessage("Layer load Done!")
             QgsProject.instance().addMapLayer(vlayer)
+
+        project = QgsProject.instance()
+        layout = QgsPrintLayout(project)
+        layout.initializeDefaults()
+        layout.setName("MyLayout")
+        project.layoutManager().addLayout(layout)
+
+        map = QgsLayoutItemMap(layout)
+        # Set map item position and size (by default, it is a 0 width/0 height item placed at 0,0)
+        map.attemptMove(QgsLayoutPoint(5, 5, QgsUnitTypes.LayoutMillimeters))
+        map.attemptResize(QgsLayoutSize(200, 200, QgsUnitTypes.LayoutMillimeters))
+        # Provide an extent to render
+        map.zoomToExtent(self.gsMapCanvas.extent())
+        layout.addLayoutItem(map)
+
+        label = QgsLayoutItemLabel(layout)
+        label.setText("Hello world")
+        label.adjustSizeToText()
+        layout.addLayoutItem(label)
+        #
+        # base_path = os.path.join(QgsProject.instance().homePath())
+        # pdf_path = os.path.join(base_path, "output.pdf")
+        #
+        # exporter = QgsLayoutExporter(layout)
+        # exporter.exportToPdf(pdf_path, QgsLayoutExporter.PdfExportSettings())
+        print(Qgis.releaseName())
+        print(Qgis.version())
+        print(Qgis.devVersion())
+        print(Qgis.MessageLevel.Info)
+        print(qgsDoubleToString(1.66666666))

@@ -12,9 +12,15 @@ class MainWindow(QMainWindow):
         self.centralwidget = QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
         self.setCentralWidget(self.centralwidget)
-        self.label = QLabel(Qgis.releaseName(), self)
+        self.releaseName_label = QLabel(Qgis.releaseName(), self)
+        self.devVersion_label = QLabel(Qgis.devVersion(), self)
+        self.geosVersion_label = QLabel(Qgis.geosVersion(), self)
+        self.version_label = QLabel(Qgis.version(),self)
         self.layout = QVBoxLayout()
-        self.layout.addWidget(self.label)
+        self.layout.addWidget(self.releaseName_label)
+        self.layout.addWidget(self.devVersion_label)
+        self.layout.addWidget(self.geosVersion_label)
+        self.layout.addWidget(self.version_label)
         self.centralwidget.setLayout(self.layout)
 
 
