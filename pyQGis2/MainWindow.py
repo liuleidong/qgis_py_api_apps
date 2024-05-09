@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from qgis.PyQt.QtWidgets import QMainWindow
 from qgis.core import QgsProject,QgsLayerTreeModel
@@ -37,5 +38,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def load_project(self):
         project = QgsProject.instance()
-        filepath = os.getcwd() + r'\..\python_cookbook\01_project.qgs'
-        print(project.read(filepath))
+        filepath = Path.cwd().parent.joinpath('python_cookbook').joinpath('01_project.qgs')
+        print(filepath.exists())
+        print(project.read(filepath.__str__()))
