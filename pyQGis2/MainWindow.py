@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 from qgis.PyQt.QtWidgets import QMainWindow
-from qgis.core import QgsProject,QgsLayerTreeModel
+from qgis.core import QgsProject,QgsLayerTreeModel,QgsVectorLayer
 from qgis.gui import QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge
 from ui.MainWindow import Ui_MainWindow
 from PyQt5.QtWidgets import QVBoxLayout,QHBoxLayout
@@ -32,12 +32,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.gsLayerTreeModel.setAutoCollapseLegendNodes(10)
         self.gsLayerTreeView.setModel(self.gsLayerTreeModel)
         # synchronise the loaded project with the canvas
-        self.gsLayerTreeBridge = QgsLayerTreeMapCanvasBridge(QgsProject.instance().layerTreeRoot(), self.gsMapCanvas, self)
+        self.gsLayerTreeBridge = QgsLayerTreeMapCanvasBridge(QgsProject.instance().layerTreeRoot(), self.gsMapCanvas)
         # signal and slot
         self.actionopen.triggered.connect(self.load_project)
 
     def load_project(self):
         project = QgsProject.instance()
-        filepath = Path.cwd().parent.joinpath('python_cookbook').joinpath('01_project.qgs')
-        print(filepath.exists())
-        print(project.read(filepath.__str__()))
+        # filepath = Path.cwd().parent.joinpath('python_cookbook').joinpath('01_project.qgs')
+        # print(project.read(filepath.__str__()))
+
+        vlayer = QgsVectorLayer(Path.cwd().parent.joinpath('python_cookbook').joinpath('airports.shp').__str__(), "airports", "ogr")
+        if not vlayer:
+            self.statusbar.showMessage("Layer failed to load!")
+        else:
+            self.statusbar.showMessage("Layer load Done!")
+            QgsProject.instance().addMapLayer(vlayer)

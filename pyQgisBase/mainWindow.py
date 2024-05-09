@@ -38,9 +38,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.rightMenu = menuProvider(self)
         self.gsLayerTreeView.setMenuProvider(self.rightMenu)
 
-        # vlayer = QgsVectorLayer("../python_cookbook/airports.shp", "airports", "ogr")
-        # if not vlayer:
-        #     self.statusbar.showMessage("Layer failed to load!")
-        # else:
-        #     self.statusbar.showMessage("Layer load Done!")
-        #     QgsProject.instance().addMapLayer(vlayer)
+        vlayer = QgsVectorLayer("../python_cookbook/airports.shp", "airports", "ogr")
+        if not vlayer:
+            self.statusbar.showMessage("Layer failed to load!")
+        else:
+            self.statusbar.showMessage("Layer load Done!")
+            QgsProject.instance().addMapLayer(vlayer)
