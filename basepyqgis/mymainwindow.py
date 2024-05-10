@@ -5,6 +5,7 @@ from qgis.PyQt.QtWidgets import QMainWindow
 from qgis.core import QgsProject,QgsLayerTreeModel,QgsVectorLayer
 from qgis.gui import QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge,QgsMapToolPan,QgsMapToolZoom
 
+from mymenuprovider import MyMenuProvider
 from ui.MainWindow import Ui_MainWindow
 
 
@@ -56,6 +57,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         tb.addAction(self.actionZoomIn)
         tb.addAction(self.actionZoomOut)
         tb.actionTriggered[QAction].connect(self.toolbtnpressed)
+
+        # 增加右键菜单
+        mymenu = MyMenuProvider(self)
+        self.gsLayerTreeView.setMenuProvider(mymenu)
 
     def toolbtnpressed(self, a):
         if self.actionPan == a:
