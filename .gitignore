@@ -137,3 +137,5 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 .idea
+/python_cookbook/data/data.gpkg-shm
+/python_cookbook/data/data.gpkg-wal
