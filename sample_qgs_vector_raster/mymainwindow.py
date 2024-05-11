@@ -68,6 +68,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # add vector layer菜单
         self.actionOGR_data_provider_ogr.triggered.connect(self.ogr_addlayer)
+        self.actionOGR_data_provider_ogr_Directory.triggered.connect(self.ogr_addlayer_dir)
 
     def toolbtnpressed(self, a):
         if self.actionPan == a:
@@ -98,8 +99,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusbar.showMessage("Project write Done!")
 
     def ogr_addlayer(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Data Source Manager | Vector", "", "vector layers (*.shp *.gpx *.gpkg *.geojson *.kml *.gml *.dxf)")
+        file_path, _ = QFileDialog.getOpenFileName(self, "Data Source Manager | Vector", ".", "vector layers (*.shp *.gpx *.gpkg *.geojson *.kml *.gml *.dxf)")
         vlayer = QgsVectorLayer(file_path, Path(file_path).stem.__str__(), "ogr")
+        if not vlayer:
+            self.statusbar.showMessage("Layer failed to load!")
+        else:
+            self.statusbar.showMessage("Layer load Done!")
+            QgsProject.instance().addMapLayer(vlayer)
+            self.gsMapCanvas.setCurrentLayer(vlayer)
+
+    def ogr_addlayer_dir(self):
+        dir_path = QFileDialog.getExistingDirectory(self,"Data Source Manager | Vector",".")
+        vlayer = QgsVectorLayer(dir_path, Path(dir_path).stem.__str__(), "ogr")
         if not vlayer:
             self.statusbar.showMessage("Layer failed to load!")
         else:
