@@ -70,6 +70,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionOGR_data_provider_ogr.triggered.connect(self.ogr_addlayer)
         self.actionOGR_data_provider_ogr_Directory.triggered.connect(self.ogr_addlayer_dir)
         self.actionGPX_data_provider_gpx.triggered.connect(self.gpx_addlayer)
+        self.actionDelimited_text_file_provider_delimitedtext.triggered.connect(self.csv_addlayer)
 
     def toolbtnpressed(self, a):
         if self.actionPan == a:
@@ -125,3 +126,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         tracksLayer = QgsVectorLayer('{}?type=track'.format(file_path), "track", "gpx")
         waypointsLayer = QgsVectorLayer('{}?type=waypoint'.format(file_path), "waypoint", "gpx")
         QgsProject.instance().addMapLayers([routesLayer,tracksLayer,waypointsLayer])
+
+    def csv_addlayer(self):
+        file_path, _ = QFileDialog.getOpenFileName(self, "Data Source Manager | Delimitedtext", ".", "Delimitedtext files (*.csv)")
+        uri = 'file:///{}?type=csv&xField=longitude&yField=latitude&crs=EPSG:4326'.format(file_path)
+        vlayer = QgsVectorLayer(uri, Path(file_path).stem.__str__(), "delimitedtext")
+        if not vlayer:
+            self.statusbar.showMessage("Layer failed to load!")
+        else:
+            self.statusbar.showMessage("Layer load Done!")
+            QgsProject.instance().addMapLayer(vlayer)
+            self.gsMapCanvas.setCurrentLayer(vlayer)
