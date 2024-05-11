@@ -73,6 +73,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionDelimited_text_file_provider_delimitedtext.triggered.connect(self.csv_addlayer)
         self.actionSpatiaLite_data_provider_spatialite.triggered.connect(self.spatialite_addlayer)
         self.actionMemory_data_provider_memory.triggered.connect(self.memory_addlayer)
+        self.actionWFS_web_feature_service_data_provider_wfs.triggered.connect(self.wfs_addlayer)
 
     def toolbtnpressed(self, a):
         if self.actionPan == a:
@@ -160,3 +161,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def memory_addlayer(self):
         pass
+
+    def wfs_addlayer(self):
+        uri = "https://demo.mapserver.org/cgi-bin/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=ms:cities"
+        vlayer = QgsVectorLayer(uri, "my wfs layer", "WFS")
+        if not vlayer:
+            self.statusbar.showMessage("Layer failed to load!")
+        else:
+            self.statusbar.showMessage("Layer load Done!")
+            QgsProject.instance().addMapLayer(vlayer)
