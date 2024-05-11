@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QAction, QFileDialog
 
 from qgis.PyQt.QtWidgets import QMainWindow
 
-from qgis.core import QgsProject,QgsLayerTreeModel,QgsVectorLayer,QgsApplication
+from qgis.core import QgsProject,QgsLayerTreeModel,QgsVectorLayer,QgsApplication,QgsDataSourceUri
 from qgis.gui import QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge,QgsMapToolPan,QgsMapToolZoom
 
 from mymenuprovider import MyMenuProvider
@@ -71,6 +71,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionOGR_data_provider_ogr_Directory.triggered.connect(self.ogr_addlayer_dir)
         self.actionGPX_data_provider_gpx.triggered.connect(self.gpx_addlayer)
         self.actionDelimited_text_file_provider_delimitedtext.triggered.connect(self.csv_addlayer)
+        self.actionSpatiaLite_data_provider_spatialite.triggered.connect(self.spatialite_addlayer)
+        self.actionMemory_data_provider_memory.triggered.connect(self.memory_addlayer)
 
     def toolbtnpressed(self, a):
         if self.actionPan == a:
@@ -101,7 +103,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusbar.showMessage("Project write Done!")
 
     def ogr_addlayer(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Data Source Manager | Vector", ".", "ogr files (*.shp *.gpx *.gpkg *.geojson *.kml *.gml *.dxf)")
+        file_path, _ = QFileDialog.getOpenFileName(self, "Data Source Manager | Vector", "../python_cookbook", "ogr files (*.shp *.gpx *.gpkg *.geojson *.kml *.gml *.dxf)")
         vlayer = QgsVectorLayer(file_path, Path(file_path).stem.__str__(), "ogr")
         if not vlayer:
             self.statusbar.showMessage("Layer failed to load!")
@@ -111,7 +113,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.gsMapCanvas.setCurrentLayer(vlayer)
 
     def ogr_addlayer_dir(self):
-        dir_path = QFileDialog.getExistingDirectory(self,"Data Source Manager | Vector",".")
+        dir_path = QFileDialog.getExistingDirectory(self,"Data Source Manager | Vector","../python_cookbook")
         vlayer = QgsVectorLayer(dir_path, Path(dir_path).stem.__str__(), "ogr")
         if not vlayer:
             self.statusbar.showMessage("Layer failed to load!")
@@ -121,14 +123,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.gsMapCanvas.setCurrentLayer(vlayer)
 
     def gpx_addlayer(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Data Source Manager | Gpx", ".", "gpx files (*.gpx)")
+        file_path, _ = QFileDialog.getOpenFileName(self, "Data Source Manager | Gpx", "../python_cookbook", "gpx files (*.gpx)")
         routesLayer = QgsVectorLayer('{}?type=route'.format(file_path), "route", "gpx")
         tracksLayer = QgsVectorLayer('{}?type=track'.format(file_path), "track", "gpx")
         waypointsLayer = QgsVectorLayer('{}?type=waypoint'.format(file_path), "waypoint", "gpx")
         QgsProject.instance().addMapLayers([routesLayer,tracksLayer,waypointsLayer])
 
     def csv_addlayer(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Data Source Manager | Delimitedtext", ".", "Delimitedtext files (*.csv)")
+        file_path, _ = QFileDialog.getOpenFileName(self, "Data Source Manager | Delimitedtext", "../python_cookbook", "Delimitedtext files (*.csv)")
         uri = 'file:///{}?type=csv&xField=longitude&yField=latitude&crs=EPSG:4326'.format(file_path)
         vlayer = QgsVectorLayer(uri, Path(file_path).stem.__str__(), "delimitedtext")
         if not vlayer:
@@ -137,3 +139,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.statusbar.showMessage("Layer load Done!")
             QgsProject.instance().addMapLayer(vlayer)
             self.gsMapCanvas.setCurrentLayer(vlayer)
+
+    def spatialite_addlayer(self):
+        file_path, _ = QFileDialog.getOpenFileName(self, "Data Source Manager | Delimitedtext", "../python_cookbook",
+                                                   "Spatialite files (*.sqlite)")
+        uri = QgsDataSourceUri()
+        uri.setDatabase(file_path)
+        schema = ''
+        table = 'landuse'
+        geom_column = 'Geometry'
+        uri.setDataSource(schema, table, geom_column)
+
+        display_name = 'landuse'
+        vlayer = QgsVectorLayer(uri.uri(), display_name, 'spatialite')
+        if not vlayer:
+            self.statusbar.showMessage("Layer failed to load!")
+        else:
+            self.statusbar.showMessage("Layer load Done!")
+            QgsProject.instance().addMapLayer(vlayer)
+
+    def memory_addlayer(self):
+        pass
