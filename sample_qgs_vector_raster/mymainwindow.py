@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QAction, QFileDialog
 
 from qgis.PyQt.QtWidgets import QMainWindow
 
-from qgis.core import QgsProject,QgsLayerTreeModel,QgsVectorLayer,QgsApplication,QgsDataSourceUri
+from qgis.core import QgsProject,QgsLayerTreeModel,QgsVectorLayer,QgsApplication,QgsDataSourceUri,QgsRasterLayer
 from qgis.gui import QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge,QgsMapToolPan,QgsMapToolZoom
 
 from mymenuprovider import MyMenuProvider
@@ -74,6 +74,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionSpatiaLite_data_provider_spatialite.triggered.connect(self.spatialite_addlayer)
         self.actionMemory_data_provider_memory.triggered.connect(self.memory_addlayer)
         self.actionWFS_web_feature_service_data_provider_wfs.triggered.connect(self.wfs_addlayer)
+        # add raster layer菜单
+        self.actionGDAL_data_provider_gdal.triggered.connect(self.gdal_addlayer)
+        self.actionWMS_data_provider_wms.triggered.connect(self.wms_addlayer)
 
     def toolbtnpressed(self, a):
         if self.actionPan == a:
@@ -170,3 +173,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.statusbar.showMessage("Layer load Done!")
             QgsProject.instance().addMapLayer(vlayer)
+
+    def gdal_addlayer(self):
+        file_path, _ = QFileDialog.getOpenFileName(self, "Data Source Manager | Raster", "../python_cookbook", "gdal files (*.tiff *.tif *.gpkg)")
+        rlayer = QgsRasterLayer(file_path, Path(file_path).stem.__str__(), "gdal")
+        if not rlayer:
+            self.statusbar.showMessage("Layer failed to load!")
+        else:
+            self.statusbar.showMessage("Layer load Done!")
+            QgsProject.instance().addMapLayer(rlayer)
+            self.gsMapCanvas.setCurrentLayer(rlayer)
+
+    def wms_addlayer(self):
+        layer_name = 'modis'
+        urlWithParams = "crs=EPSG:4326&format=image/png&layers=continents&styles&url=https://demo.mapserver.org/cgi-bin/wms"
+        rlayer = QgsRasterLayer(urlWithParams, 'some layer name', 'wms')
+        if not rlayer.isValid():
+            print("Layer failed to load!")
+        else:
+            self.statusbar.showMessage("Layer load Done!")
+            QgsProject.instance().addMapLayer(rlayer)

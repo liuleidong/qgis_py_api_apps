@@ -54,8 +54,16 @@
     <addaction name="actionMemory_data_provider_memory"/>
     <addaction name="actionWFS_web_feature_service_data_provider_wfs"/>
    </widget>
+   <widget class="QMenu" name="menuAdd_Raster_Layer">
+    <property name="title">
+     <string>Add Raster Layer</string>
+    </property>
+    <addaction name="actionGDAL_data_provider_gdal"/>
+    <addaction name="actionWMS_data_provider_wms"/>
+   </widget>
    <addaction name="menuProject"/>
    <addaction name="menuAdd_Vector_Layer"/>
+   <addaction name="menuAdd_Raster_Layer"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="dockWidget">
@@ -117,6 +125,16 @@
   <action name="actionOGR_data_provider_ogr_Directory">
    <property name="text">
     <string>OGR data provider(ogr) | Directory</string>
+   </property>
+  </action>
+  <action name="actionGDAL_data_provider_gdal">
+   <property name="text">
+    <string>GDAL data provider(gdal)</string>
+   </property>
+  </action>
+  <action name="actionWMS_data_provider_wms">
+   <property name="text">
+    <string>WMS data provider(wms)</string>
    </property>
   </action>
  </widget>
