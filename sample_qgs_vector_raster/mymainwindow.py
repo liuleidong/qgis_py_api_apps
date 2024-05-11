@@ -1,3 +1,6 @@
+from pathlib import Path
+from threading import Timer
+
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QAction, QFileDialog
 
@@ -63,6 +66,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionClose.triggered.connect(self.project_close)
         self.actionSave.triggered.connect(self.project_save)
 
+        # add vector layer菜单
+        self.actionOGR_data_provider_ogr.triggered.connect(self.ogr_addlayer)
+
     def toolbtnpressed(self, a):
         if self.actionPan == a:
             self.gsMapCanvas.setMapTool(self.gsMapToolPan)
@@ -90,3 +96,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def project_save(self):
         QgsProject.instance().write()
         self.statusbar.showMessage("Project write Done!")
+
+    def ogr_addlayer(self):
+        file_path, _ = QFileDialog.getOpenFileName(self, "Data Source Manager | Vector", "", "vector layers (*.shp *.gpx *.gpkg *.geojson *.kml *.gml *.dxf)")
+        vlayer = QgsVectorLayer(file_path, Path(file_path).stem.__str__(), "ogr")
+        if not vlayer:
+            self.statusbar.showMessage("Layer failed to load!")
+        else:
+            self.statusbar.showMessage("Layer load Done!")
+            QgsProject.instance().addMapLayer(vlayer)
+            self.gsMapCanvas.setCurrentLayer(vlayer)
