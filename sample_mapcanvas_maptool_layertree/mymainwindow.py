@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QAction
 
 from qgis.PyQt.QtWidgets import QMainWindow
 from qgis.core import QgsProject,QgsLayerTreeModel,QgsVectorLayer
-from qgis.gui import QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge,QgsMapToolPan,QgsMapToolZoom
+from qgis.gui import QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge,QgsMapToolPan,QgsMapToolZoom,QgsMapToolIdentifyFeature
 
 from mymenuprovider import MyMenuProvider
 from ui.MainWindow import Ui_MainWindow
@@ -43,19 +43,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.statusbar.showMessage("Layer load Done!")
             QgsProject.instance().addMapLayer(vlayer)
+            self.gsMapCanvas.setCurrentLayer(vlayer)
         # 添加三个maptool
         self.gsMapToolPan = QgsMapToolPan(self.gsMapCanvas)
         self.gsMapToolZoomIn = QgsMapToolZoom(self.gsMapCanvas,False)
         self.gsMapToolZoomOut = QgsMapToolZoom(self.gsMapCanvas,True)
+        self.gsMapToolIdentifyFeature = QgsMapToolIdentifyFeature(self.gsMapCanvas)
+        self.gsMapToolIdentifyFeature.featureIdentified.connect(self.identify_callback)
         self.gsMapCanvas.setMapTool(self.gsMapToolPan)
         # 添加ToolBar用于切换Maptool
         tb = self.addToolBar('MapTools')
         self.actionPan = QAction(QIcon(':/images/mActionPan.png'),'Pan',self)
+        self.actionPan.setCheckable(True)
+        self.actionPan.setChecked(True)
         self.actionZoomIn = QAction(QIcon(':/images/mActionZoomIn.png'),'ZoomIn',self)
+        self.actionZoomIn.setCheckable(True)
         self.actionZoomOut = QAction(QIcon(':/images/mActionZoomOut.png'),'ZoomOut',self)
+        self.actionZoomOut.setCheckable(True)
+        self.actionIdentifyFeature = QAction(QIcon(':/images/mActionIdentify.png'),'Identify',self)
+        self.actionIdentifyFeature.setCheckable(True)
+
         tb.addAction(self.actionPan)
         tb.addAction(self.actionZoomIn)
         tb.addAction(self.actionZoomOut)
+        tb.addAction(self.actionIdentifyFeature)
         tb.actionTriggered[QAction].connect(self.toolbtnpressed)
 
         # 增加右键菜单
@@ -63,9 +74,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.gsLayerTreeView.setMenuProvider(mymenu)
 
     def toolbtnpressed(self, a):
+        self.actionPan.setChecked(False)
+        self.actionZoomOut.setChecked(False)
+        self.actionZoomIn.setChecked(False)
+        self.actionIdentifyFeature.setChecked(False)
         if self.actionPan == a:
             self.gsMapCanvas.setMapTool(self.gsMapToolPan)
         elif self.actionZoomIn == a:
             self.gsMapCanvas.setMapTool(self.gsMapToolZoomIn)
         elif self.actionZoomOut == a:
             self.gsMapCanvas.setMapTool(self.gsMapToolZoomOut)
+        elif self.actionIdentifyFeature == a:
+            self.gsMapCanvas.setMapTool(self.gsMapToolIdentifyFeature)
+            self.gsMapToolIdentifyFeature.setLayer(self.gsMapCanvas.currentLayer())
+
+    def identify_callback(self,feature):
+        print("You clicked on feature {}".format(feature.id()))
+        self.statusbar.showMessage("You clicked on feature {}".format(feature.id()))
