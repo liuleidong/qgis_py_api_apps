@@ -7,7 +7,7 @@ from qgis.gui import QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge,Q
 
 from mymenuprovider import MyMenuProvider
 from ui.MainWindow import Ui_MainWindow
-
+from rectanglemaptool import RectangleMapTool
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -50,6 +50,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.gsMapToolZoomOut = QgsMapToolZoom(self.gsMapCanvas,True)
         self.gsMapToolIdentifyFeature = QgsMapToolIdentifyFeature(self.gsMapCanvas)
         self.gsMapToolIdentifyFeature.featureIdentified.connect(self.identify_callback)
+        self.gsMapToolRectangleMapTool = RectangleMapTool(self.gsMapCanvas)
         self.gsMapCanvas.setMapTool(self.gsMapToolPan)
         # 添加ToolBar用于切换Maptool
         tb = self.addToolBar('MapTools')
@@ -62,11 +63,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionZoomOut.setCheckable(True)
         self.actionIdentifyFeature = QAction(QIcon(':/images/mActionIdentify.png'),'Identify',self)
         self.actionIdentifyFeature.setCheckable(True)
+        self.actionRectangle = QAction(QIcon(':/images/mActionAddBasicRectangle.png'),'Rectangle',self)
+        self.actionRectangle.setCheckable(True)
 
         tb.addAction(self.actionPan)
         tb.addAction(self.actionZoomIn)
         tb.addAction(self.actionZoomOut)
         tb.addAction(self.actionIdentifyFeature)
+        tb.addAction(self.actionRectangle)
         tb.actionTriggered[QAction].connect(self.toolbtnpressed)
 
         # 增加右键菜单
@@ -87,6 +91,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         elif self.actionIdentifyFeature == a:
             self.gsMapCanvas.setMapTool(self.gsMapToolIdentifyFeature)
             self.gsMapToolIdentifyFeature.setLayer(self.gsMapCanvas.currentLayer())
+        elif self.actionRectangle == a:
+            self.gsMapCanvas.setMapTool(self.gsMapToolRectangleMapTool)
 
     def identify_callback(self,feature):
         print("You clicked on feature {}".format(feature.id()))
