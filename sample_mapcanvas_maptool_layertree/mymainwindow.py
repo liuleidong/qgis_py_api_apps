@@ -1,9 +1,9 @@
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QAction
 
-from qgis.PyQt.QtWidgets import QMainWindow
+from qgis.PyQt.QtWidgets import QMainWindow,QMenu
 from qgis.core import QgsProject,QgsLayerTreeModel,QgsVectorLayer
-from qgis.gui import QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge,QgsMapToolPan,QgsMapToolZoom,QgsMapToolIdentifyFeature
+from qgis.gui import QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge,QgsMapToolPan,QgsMapToolZoom,QgsMapToolIdentifyFeature,QgsMapMouseEvent
 
 from mymenuprovider import MyMenuProvider
 from ui.MainWindow import Ui_MainWindow
@@ -20,6 +20,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         vl.addWidget(self.gsLayerTreeView)
         # 初始化mapCanvas
         self.gsMapCanvas = QgsMapCanvas(self)
+        self.gsMapCanvas.contextMenuAboutToShow.connect(self.populateContextMenu)
         # TODO 设置destcrs 和 extent
         hl = QHBoxLayout(self.mapcanvasWidget)
         hl.setContentsMargins(0,0,0,0)
@@ -97,3 +98,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def identify_callback(self,feature):
         print("You clicked on feature {}".format(feature.id()))
         self.statusbar.showMessage("You clicked on feature {}".format(feature.id()))
+
+    def populateContextMenu(self,menu: QMenu, event: QgsMapMouseEvent):
+        subMenu = menu.addMenu('My Menu')
+        action = subMenu.addAction('My Action')
+        action.triggered.connect(lambda *args:
+                                 print(f'Action triggered at {event.x()},{event.y()}'))
