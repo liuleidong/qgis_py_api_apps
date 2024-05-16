@@ -49,8 +49,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 添加ToolBar用于切换Maptool
         tb = self.addToolBar('MapTools')
         self.actionPan = QAction(QIcon(':/images/mActionPan.png'),'Pan',self)
-        self.actionZoomIn = QAction(QIcon(':/images/mActionZoomIn.png'),'ZoomIn',self)
-        self.actionZoomOut = QAction(QIcon(':/images/mActionZoomOut.png'),'ZoomOut',self)
+        self.actionPan.setCheckable(True)
+        self.actionPan.setChecked(True)
+        self.actionZoomIn = QAction(QIcon(':/images/mActionZoomIn.png'), 'ZoomIn', self)
+        self.actionZoomIn.setCheckable(True)
+        self.actionZoomOut = QAction(QIcon(':/images/mActionZoomOut.png'), 'ZoomOut', self)
+        self.actionZoomOut.setCheckable(True)
         tb.addAction(self.actionPan)
         tb.addAction(self.actionZoomIn)
         tb.addAction(self.actionZoomOut)
@@ -79,11 +83,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionWMS_data_provider_wms.triggered.connect(self.wms_addlayer)
 
     def toolbtnpressed(self, a):
+        self.actionPan.setChecked(False)
+        self.actionZoomIn.setChecked(False)
+        self.actionZoomOut.setChecked(False)
         if self.actionPan == a:
+            self.actionPan.setChecked(True)
             self.gsMapCanvas.setMapTool(self.gsMapToolPan)
         elif self.actionZoomIn == a:
+            self.actionZoomIn.setChecked(True)
             self.gsMapCanvas.setMapTool(self.gsMapToolZoomIn)
         elif self.actionZoomOut == a:
+            self.actionZoomOut.setChecked(True)
             self.gsMapCanvas.setMapTool(self.gsMapToolZoomOut)
 
     def project_new(self):

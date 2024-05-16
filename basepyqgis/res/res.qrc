@@ -6,5 +6,7 @@
     <file>mActionPan.png</file>
     <file>mActionZoomIn.png</file>
     <file>mActionZoomOut.png</file>
+    <file>mActionIdentify.png</file>
+    <file>mActionAddBasicRectangle.png</file>
   </qresource>
 </RCC>

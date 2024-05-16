@@ -84,15 +84,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionZoomIn.setChecked(False)
         self.actionIdentifyFeature.setChecked(False)
         if self.actionPan == a:
+            self.actionPan.setChecked(True)
             self.gsMapCanvas.setMapTool(self.gsMapToolPan)
         elif self.actionZoomIn == a:
+            self.actionZoomIn.setChecked(True)
             self.gsMapCanvas.setMapTool(self.gsMapToolZoomIn)
         elif self.actionZoomOut == a:
+            self.actionZoomOut.setChecked(True)
             self.gsMapCanvas.setMapTool(self.gsMapToolZoomOut)
         elif self.actionIdentifyFeature == a:
+            self.actionIdentifyFeature.setChecked(True)
             self.gsMapCanvas.setMapTool(self.gsMapToolIdentifyFeature)
             self.gsMapToolIdentifyFeature.setLayer(self.gsMapCanvas.currentLayer())
         elif self.actionRectangle == a:
+            self.actionRectangle.setChecked(True)
             self.gsMapCanvas.setMapTool(self.gsMapToolRectangleMapTool)
 
     def identify_callback(self,feature):
