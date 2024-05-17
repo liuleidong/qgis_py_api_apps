@@ -1,8 +1,9 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMenu, QMessageBox
+from PyQt5.QtGui import QColor
 
 from qgis.gui import QgsLayerTreeViewMenuProvider,QgsLayerTreeViewDefaultActions,QgsLayerTreeView,QgsMapCanvas,QgsRasterLayerProperties
-from qgis.core import QgsLayerTree,QgsLayerTreeGroup,QgsMapLayer,QgsVectorLayer,QgsProject,QgsRasterLayer
+from qgis.core import QgsLayerTree,QgsLayerTreeGroup,QgsMapLayer,QgsVectorLayer,QgsProject,QgsRasterLayer,QgsColorRampShader,QgsRasterShader,QgsSingleBandPseudoColorRenderer
 
 from myrasterdetail import MyRasterDetail
 
@@ -50,6 +51,7 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
                         menu.addAction(self.actionShowFeatureCount)
                     elif isinstance(layer,QgsRasterLayer) is True:
                         menu.addAction('Properties', self.rasterlayerProperties)
+                        menu.addAction('SingleBandPseudoColorRenderer',self.rasterSingleBandRenderer)
                 return menu
 
         except:
@@ -62,6 +64,21 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
             # prop.exec()
             detail = MyRasterDetail(layer)
             detail.exec_()
+
+    def rasterSingleBandRenderer(self):
+        rlayer = self.layerTreeView.currentLayer()
+        if rlayer:
+            fcn = QgsColorRampShader()
+            fcn.setColorRampType(QgsColorRampShader.Interpolated)
+            lst = [QgsColorRampShader.ColorRampItem(0, QColor(0, 255, 0)),
+                   QgsColorRampShader.ColorRampItem(255, QColor(255, 255, 0))]
+            fcn.setColorRampItemList(lst)
+            shader = QgsRasterShader()
+            shader.setRasterShaderFunction(fcn)
+            renderer = QgsSingleBandPseudoColorRenderer(rlayer.dataProvider(), 1, shader)
+            rlayer.setRenderer(renderer)
+            rlayer.triggerRepaint()
+
     def updateRasterLayerRenderer(self, widget, layer):
         print("change")
         layer.setRenderer(widget.renderer())
