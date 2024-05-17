@@ -5,7 +5,10 @@ from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QAction
 
 from qgis.PyQt.QtWidgets import QMainWindow,QMenu, QFileDialog
 from qgis.core import QgsProject,QgsLayerTreeModel,QgsVectorLayer,QgsApplication,QgsDataSourceUri,QgsRasterLayer
-from qgis.gui import QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge,QgsMapToolPan,QgsMapToolZoom,QgsMapToolIdentifyFeature,QgsMapMouseEvent
+from qgis.gui import (
+    QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge,
+    QgsMapToolPan,QgsMapToolZoom,QgsMapToolIdentifyFeature,QgsMapMouseEvent,
+    QgsGui,QgsEditorWidgetRegistry,QgsAttributeDialog,QgsAttributeForm)
 
 from mymenuprovider import MyMenuProvider
 from ui.MainWindow import Ui_MainWindow
@@ -89,6 +92,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # add raster layer菜单
         self.actionGDAL_data_provider_gdal.triggered.connect(self.gdal_addlayer)
         self.actionWMS_data_provider_wms.triggered.connect(self.wms_addlayer)
+        QgsGui.editorWidgetRegistry().initEditors()
 
     def toolbtnpressed(self, a):
         self.actionPan.setChecked(False)
@@ -117,6 +121,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def identify_callback(self,feature):
         print("You clicked on feature {}".format(feature.id()))
         self.statusbar.showMessage("You clicked on feature {}".format(feature.id()))
+        vlayer = self.gsMapCanvas.currentLayer()
+
+        self.attribute_dialog = QgsAttributeDialog(vlayer,feature,True)
+        self.attribute_dialog.show()
+        # self.attribute_form = QgsAttributeForm(vlayer,feature)
+        # self.attribute_form.setMode(0)
+        # self.attribute_form.show()
 
     def populateContextMenu(self,menu: QMenu, event: QgsMapMouseEvent):
         subMenu = menu.addMenu('My Menu')
