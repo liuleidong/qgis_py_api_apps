@@ -2,8 +2,12 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMenu, QMessageBox
 from PyQt5.QtGui import QColor
 
-from qgis.gui import QgsLayerTreeViewMenuProvider,QgsLayerTreeViewDefaultActions,QgsLayerTreeView,QgsMapCanvas,QgsRasterLayerProperties
-from qgis.core import QgsLayerTree,QgsLayerTreeGroup,QgsMapLayer,QgsVectorLayer,QgsProject,QgsRasterLayer,QgsColorRampShader,QgsRasterShader,QgsSingleBandPseudoColorRenderer
+from qgis.gui import (
+    QgsLayerTreeViewMenuProvider,QgsLayerTreeViewDefaultActions,QgsLayerTreeView,QgsMapCanvas,
+    QgsRasterLayerProperties,QgsMultiBandColorRendererWidget)
+from qgis.core import (
+QgsLayerTree,QgsLayerTreeGroup,QgsMapLayer,QgsVectorLayer,QgsProject,
+QgsRasterLayer,QgsColorRampShader,QgsRasterShader,QgsSingleBandPseudoColorRenderer)
 
 from myrasterdetail import MyRasterDetail
 
@@ -52,6 +56,7 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
                     elif isinstance(layer,QgsRasterLayer) is True:
                         menu.addAction('Properties', self.rasterlayerProperties)
                         menu.addAction('SingleBandPseudoColorRenderer',self.rasterSingleBandRenderer)
+                        menu.addAction('MultiBandColorRenderer',self.rasterMultiBandColorRenderer)
                 return menu
 
         except:
@@ -78,6 +83,14 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
             renderer = QgsSingleBandPseudoColorRenderer(rlayer.dataProvider(), 1, shader)
             rlayer.setRenderer(renderer)
             rlayer.triggerRepaint()
+
+    def rasterMultiBandColorRenderer(self):
+        rlayer = self.layerTreeView.currentLayer()
+        if rlayer:
+            # self.multi_band_color_renderer_widget = QgsMultiBandColorRendererWidget(rlayer)
+            # self.multi_band_color_renderer_widget.show()
+            prop = QgsRasterLayerProperties(rlayer,self.mapCanvas)
+            prop.exec()
 
     def updateRasterLayerRenderer(self, widget, layer):
         print("change")
