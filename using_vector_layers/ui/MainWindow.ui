@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../res/res.qrc">
+    <normaloff>:/ico/qgis.ico</normaloff>:/ico/qgis.ico</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QWidget" name="mapcanvasWidget" native="true"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuProject">
+    <property name="title">
+     <string>Project</string>
+    </property>
+    <addaction name="actionNew"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionClose"/>
+   </widget>
+   <widget class="QMenu" name="menuAdd_Vector_Layer">
+    <property name="title">
+     <string>Add Vector Layer</string>
+    </property>
+    <addaction name="actionOGR_data_provider_ogr"/>
+    <addaction name="actionOGR_data_provider_ogr_Directory"/>
+    <addaction name="actionGPX_data_provider_gpx"/>
+    <addaction name="actionDelimited_text_file_provider_delimitedtext"/>
+    <addaction name="actionSpatiaLite_data_provider_spatialite"/>
+    <addaction name="actionMemory_data_provider_memory"/>
+    <addaction name="actionWFS_web_feature_service_data_provider_wfs"/>
+   </widget>
+   <widget class="QMenu" name="menuAdd_Raster_Layer">
+    <property name="title">
+     <string>Add Raster Layer</string>
+    </property>
+    <addaction name="actionGDAL_data_provider_gdal"/>
+    <addaction name="actionWMS_data_provider_wms"/>
+   </widget>
+   <addaction name="menuProject"/>
+   <addaction name="menuAdd_Vector_Layer"/>
+   <addaction name="menuAdd_Raster_Layer"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QDockWidget" name="dockWidget">
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="layerTreeDockWidget"/>
+  </widget>
+  <action name="actionNew">
+   <property name="text">
+    <string>New</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionClose">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionGPX_data_provider_gpx">
+   <property name="text">
+    <string>GPX data provider(gpx)</string>
+   </property>
+  </action>
+  <action name="actionDelimited_text_file_provider_delimitedtext">
+   <property name="text">
+    <string>Delimited text file provider(delimitedtext)</string>
+   </property>
+  </action>
+  <action name="actionSpatiaLite_data_provider_spatialite">
+   <property name="text">
+    <string>SpatiaLite data provider(spatialite)</string>
+   </property>
+  </action>
+  <action name="actionMemory_data_provider_memory">
+   <property name="text">
+    <string>Memory data provider(memory)</string>
+   </property>
+  </action>
+  <action name="actionWFS_web_feature_service_data_provider_wfs">
+   <property name="text">
+    <string>WFS(web feature service) data provider(wfs)</string>
+   </property>
+  </action>
+  <action name="actionOGR_data_provider_ogr">
+   <property name="text">
+    <string>OGR data provider(ogr) | File</string>
+   </property>
+  </action>
+  <action name="actionOGR_data_provider_ogr_Directory">
+   <property name="text">
+    <string>OGR data provider(ogr) | Directory</string>
+   </property>
+  </action>
+  <action name="actionGDAL_data_provider_gdal">
+   <property name="text">
+    <string>GDAL data provider(gdal)</string>
+   </property>
+  </action>
+  <action name="actionWMS_data_provider_wms">
+   <property name="text">
+    <string>WMS data provider(wms)</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../res/res.qrc"/>
+ </resources>
+ <connections/>
+</ui>
