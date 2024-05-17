@@ -4,6 +4,8 @@ from PyQt5.QtWidgets import QMenu, QMessageBox
 from qgis.gui import QgsLayerTreeViewMenuProvider,QgsLayerTreeViewDefaultActions,QgsLayerTreeView,QgsMapCanvas,QgsRasterLayerProperties
 from qgis.core import QgsLayerTree,QgsLayerTreeGroup,QgsMapLayer,QgsVectorLayer,QgsProject,QgsRasterLayer
 
+from myrasterdetail import MyRasterDetail
+
 
 class MyMenuProvider(QgsLayerTreeViewMenuProvider):
     def __init__(self, MyMainWindow, *args, **kwargs):
@@ -56,8 +58,10 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
     def rasterlayerProperties(self):
         layer = self.layerTreeView.currentLayer()
         if layer:
-            prop = QgsRasterLayerProperties(layer,self.mapCanvas)
-            prop.exec()
+            # prop = QgsRasterLayerProperties(layer,self.mapCanvas)
+            # prop.exec()
+            detail = MyRasterDetail(layer)
+            detail.exec_()
     def updateRasterLayerRenderer(self, widget, layer):
         print("change")
         layer.setRenderer(widget.renderer())
