@@ -42,9 +42,8 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
                         self.actionZoomToLayers = self.actions.actionZoomToLayers(self.mapCanvas,menu)
                         menu.addAction(self.actionZoomToLayers) #addAction直接传入self.actions.actionZoomToLayers(self.mapCanvas,menu)还不行，原因未知
                     self.actionRemoveGroupOrLayer = self.actions.actionRemoveGroupOrLayer(menu)
-                    menu.addAction(self.actionRemoveGroupOrLayer)
-                    vlayer: QgsVectorLayer = layer
-                    if vlayer.isValid():
+                    menu.addAction(self.actionRemoveGroupOrLayer)                  
+                    if isinstance(layer, QgsVectorLayer) is True:
                         self.actionShowFeatureCount = self.actions.actionShowFeatureCount(menu)
                         menu.addAction(self.actionShowFeatureCount)
                 return menu

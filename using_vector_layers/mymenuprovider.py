@@ -1,8 +1,8 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QMenu, QMessageBox,QAction
+from PyQt5.QtWidgets import QMenu, QMessageBox, QAction, QDialog, QFormLayout
 
-from qgis.gui import QgsLayerTreeViewMenuProvider,QgsLayerTreeViewDefaultActions,QgsLayerTreeView,QgsMapCanvas
-from qgis.core import QgsLayerTree,QgsLayerTreeGroup,QgsMapLayer,QgsVectorLayer,QgsProject
+from qgis.gui import QgsLayerTreeViewMenuProvider,QgsLayerTreeViewDefaultActions,QgsLayerTreeView,QgsMapCanvas,QgsMapLayerComboBox,QgsFieldComboBox
+from qgis.core import QgsLayerTree,QgsLayerTreeGroup,QgsMapLayer,QgsVectorLayer,QgsProject,QgsMapLayerProxyModel
 
 
 class MyMenuProvider(QgsLayerTreeViewMenuProvider):
@@ -43,15 +43,41 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
                         menu.addAction(self.actionZoomToLayers) #addAction直接传入self.actions.actionZoomToLayers(self.mapCanvas,menu)还不行，原因未知
                     self.actionRemoveGroupOrLayer = self.actions.actionRemoveGroupOrLayer(menu)
                     menu.addAction(self.actionRemoveGroupOrLayer)
-                    vlayer: QgsVectorLayer = layer
-                    if vlayer.isValid():
+                    if isinstance(layer, QgsVectorLayer) is True:
                         self.actionShowFeatureCount = self.actions.actionShowFeatureCount(menu)
                         menu.addAction(self.actionShowFeatureCount)
+                        menu.addAction('Show Fields', self.showlayerfields)
+
                 return menu
 
         except:
             print('menu error')
 
+    def showlayerfields(self):
+        # Create dialog
+        new_dialog = QDialog()
+        # Add combobox for layer and field
+        map_layer_combo_box = QgsMapLayerComboBox()
+        map_layer_combo_box.setCurrentIndex(-1)
+        map_layer_combo_box.setFilters(QgsMapLayerProxyModel.VectorLayer)
+        field_combo_box = QgsFieldComboBox()
+
+        # Create a form layout and add the two combobox
+        layout = QFormLayout()
+        layout.addWidget(map_layer_combo_box)
+        layout.addWidget(field_combo_box)
+
+        # Add signal event
+        map_layer_combo_box.layerChanged.connect(field_combo_box.setLayer)  # setLayer is a native slot function
+
+        def on_field_changed(fieldName):
+            print(fieldName)
+            print("Layer field changed")
+
+        field_combo_box.fieldChanged.connect(on_field_changed)
+
+        new_dialog.setLayout(layout)
+        new_dialog.exec_()
     def updateRasterLayerRenderer(self, widget, layer):
         print("change")
         layer.setRenderer(widget.renderer())
