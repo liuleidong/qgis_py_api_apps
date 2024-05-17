@@ -1,8 +1,12 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QMenu, QMessageBox, QAction, QDialog, QFormLayout
+from PyQt5.QtWidgets import QMenu, QMessageBox, QAction, QDialog, QFormLayout,QTableView
 
-from qgis.gui import QgsLayerTreeViewMenuProvider,QgsLayerTreeViewDefaultActions,QgsLayerTreeView,QgsMapCanvas,QgsMapLayerComboBox,QgsFieldComboBox
-from qgis.core import QgsLayerTree,QgsLayerTreeGroup,QgsMapLayer,QgsVectorLayer,QgsProject,QgsMapLayerProxyModel
+from qgis.gui import (
+    QgsLayerTreeViewMenuProvider,QgsLayerTreeViewDefaultActions,QgsLayerTreeView,QgsMapCanvas,
+    QgsMapLayerComboBox,QgsFieldComboBox,QgsAttributeTableModel,QgsAttributeTableFilterModel,QgsAttributeTableView)
+from qgis.core import (
+    QgsLayerTree,QgsLayerTreeGroup,QgsMapLayer,QgsVectorLayer,QgsProject,QgsMapLayerProxyModel,
+    QgsVectorLayerCache,)
 
 
 class MyMenuProvider(QgsLayerTreeViewMenuProvider):
@@ -47,11 +51,25 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
                         self.actionShowFeatureCount = self.actions.actionShowFeatureCount(menu)
                         menu.addAction(self.actionShowFeatureCount)
                         menu.addAction('Show Fields', self.showlayerfields)
-
+                        menu.addAction('Open Attribute Table',self.showlayertableview)
                 return menu
 
         except:
             print('menu error')
+
+    def showlayertableview(self):
+        vlayer = self.mapCanvas.currentLayer()
+        self.vector_layer_cache = QgsVectorLayerCache(vlayer, 10000)
+        self.attribute_table_model = QgsAttributeTableModel(self.vector_layer_cache)
+        self.attribute_table_model.loadLayer()
+
+        self.attribute_table_filter_model = QgsAttributeTableFilterModel(
+            self.mapCanvas,
+            self.attribute_table_model
+        )
+        self.attribute_table_view = QgsAttributeTableView()
+        self.attribute_table_view.setModel(self.attribute_table_filter_model)
+        self.attribute_table_view.show()
 
     def showlayerfields(self):
         # Create dialog
