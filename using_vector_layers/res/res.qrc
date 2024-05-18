@@ -8,5 +8,10 @@
     <file>mActionZoomOut.png</file>
     <file>mActionIdentify.png</file>
     <file>mActionAddBasicRectangle.png</file>
+    <file>mActionDeselectAll.png</file>
+    <file>mActionSelectAll.png</file>
+    <file>mIconExpressionSelect.png</file>
+    <file>mIconFormSelect.png</file>
+    <file>mIconSelectRemove.png</file>
   </qresource>
 </RCC>

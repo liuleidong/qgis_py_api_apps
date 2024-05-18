@@ -8,7 +8,7 @@ from qgis.core import QgsProject,QgsLayerTreeModel,QgsVectorLayer,QgsApplication
 from qgis.gui import (
     QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge,
     QgsMapToolPan,QgsMapToolZoom,QgsMapToolIdentifyFeature,QgsMapMouseEvent,
-    QgsGui,QgsEditorWidgetRegistry,QgsAttributeDialog,QgsAttributeForm)
+    QgsGui,QgsEditorWidgetRegistry,QgsAttributeDialog,QgsAttributeForm,QgsExpressionSelectionDialog)
 
 from mymenuprovider import MyMenuProvider
 from ui.MainWindow import Ui_MainWindow
@@ -51,7 +51,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.gsMapToolRectangleMapTool = RectangleMapTool(self.gsMapCanvas)
         self.gsMapCanvas.setMapTool(self.gsMapToolPan)
         # 添加ToolBar用于切换Maptool
-        tb = self.addToolBar('MapTools')
+        tb_maptool = self.addToolBar('MapTools')
         self.actionPan = QAction(QIcon(':/images/mActionPan.png'),'Pan',self)
         self.actionPan.setCheckable(True)
         self.actionPan.setChecked(True)
@@ -64,13 +64,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionRectangle = QAction(QIcon(':/images/mActionAddBasicRectangle.png'),'Rectangle',self)
         self.actionRectangle.setCheckable(True)
 
-        tb.addAction(self.actionPan)
-        tb.addAction(self.actionZoomIn)
-        tb.addAction(self.actionZoomOut)
-        tb.addAction(self.actionIdentifyFeature)
-        tb.addAction(self.actionRectangle)
-        tb.actionTriggered[QAction].connect(self.toolbtnpressed)
+        tb_maptool.addAction(self.actionPan)
+        tb_maptool.addAction(self.actionZoomIn)
+        tb_maptool.addAction(self.actionZoomOut)
+        tb_maptool.addAction(self.actionIdentifyFeature)
+        tb_maptool.addAction(self.actionRectangle)
+        tb_maptool.actionTriggered[QAction].connect(self.tbmaptoolbtnpressed)
 
+        # 选择工具栏
+        tb_selection = self.addToolBar('Selections')
+        self.actionSelectAll = QAction(QIcon(':/images/mActionSelectAll.png'),'Select All',self)
+        self.actionDeselectAll = QAction(QIcon(':/images/mActionDeselectAll.png'),'Deselect All',self)
+        self.actionSelectByValue = QAction(QIcon(':/images/mIconFormSelect.png'),'Select By Value',self)
+        self.actionSelectByExpression = QAction(QIcon(':/images/mIconExpressionSelect.png'), 'Select By Expression', self)
+
+        tb_selection.addAction(self.actionSelectAll)
+        tb_selection.addAction(self.actionDeselectAll)
+        tb_selection.addAction(self.actionSelectByValue)
+        tb_selection.addAction(self.actionSelectByExpression)
+        tb_selection.actionTriggered[QAction].connect(self.tbselectionbtnpressed)
         # 增加右键菜单
         mymenu = MyMenuProvider(self)
         self.gsLayerTreeView.setMenuProvider(mymenu)
@@ -94,7 +106,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionWMS_data_provider_wms.triggered.connect(self.wms_addlayer)
         QgsGui.editorWidgetRegistry().initEditors()
 
-    def toolbtnpressed(self, a):
+    def tbmaptoolbtnpressed(self, a):
         self.actionPan.setChecked(False)
         self.actionZoomIn.setChecked(False)
         self.actionZoomOut.setChecked(False)
@@ -118,16 +130,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.actionRectangle.setChecked(True)
             self.gsMapCanvas.setMapTool(self.gsMapToolRectangleMapTool)
 
+    def tbselectionbtnpressed(self, a):
+        layer = self.gsMapCanvas.currentLayer()
+        if layer is None:
+            return
+        if self.actionSelectAll == a:
+            layer.selectAll()
+        elif self.actionDeselectAll == a:
+            layer.removeSelection()
+        elif self.actionSelectByValue == a:
+            self.attribute_form = QgsAttributeForm(layer)
+            self.attribute_form.setMode(4)
+            self.attribute_form.show()
+        elif self.actionSelectByExpression == a:
+            ed = QgsExpressionSelectionDialog(layer)
+            ed.exec_()
+
     def identify_callback(self,feature):
         print("You clicked on feature {}".format(feature.id()))
         self.statusbar.showMessage("You clicked on feature {}".format(feature.id()))
         vlayer = self.gsMapCanvas.currentLayer()
 
-        self.attribute_dialog = QgsAttributeDialog(vlayer,feature,True)
-        self.attribute_dialog.show()
-        # self.attribute_form = QgsAttributeForm(vlayer,feature)
-        # self.attribute_form.setMode(0)
-        # self.attribute_form.show()
+        # self.attribute_dialog = QgsAttributeDialog(vlayer,feature,True)
+        # self.attribute_dialog.show()
+        self.attribute_form = QgsAttributeForm(vlayer,feature)
+        self.attribute_form.setMode(0)
+        self.attribute_form.show()
 
     def populateContextMenu(self,menu: QMenu, event: QgsMapMouseEvent):
         subMenu = menu.addMenu('My Menu')
