@@ -1,10 +1,13 @@
 from pathlib import Path
 
+from PyQt5.QtCore import Qt,QSize,QSizeF
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QAction
 
 from qgis.PyQt.QtWidgets import QMainWindow,QMenu, QFileDialog
-from qgis.core import QgsProject,QgsLayerTreeModel,QgsVectorLayer,QgsApplication,QgsDataSourceUri,QgsRasterLayer
+from qgis.core import (
+    QgsProject,QgsLayerTreeModel,QgsVectorLayer,QgsApplication,QgsDataSourceUri,QgsRasterLayer,
+    QgsDiagramSettings,QgsLinearlyInterpolatedDiagramRenderer,QgsPieDiagram,QgsDiagramLayerSettings)
 from qgis.gui import QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge,QgsMapToolPan,QgsMapToolZoom,QgsMapToolIdentifyFeature,QgsMapMouseEvent
 
 from mymenuprovider import MyMenuProvider
@@ -89,6 +92,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # add raster layer菜单
         self.actionGDAL_data_provider_gdal.triggered.connect(self.gdal_addlayer)
         self.actionWMS_data_provider_wms.triggered.connect(self.wms_addlayer)
+        # 图表
+        self.actionPie_Chart.triggered.connect(self.pie_chart)
 
     def toolbtnpressed(self, a):
         self.actionPan.setChecked(False)
@@ -113,6 +118,47 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         elif self.actionRectangle == a:
             self.actionRectangle.setChecked(True)
             self.gsMapCanvas.setMapTool(self.gsMapToolRectangleMapTool)
+
+    def add_test_layer(self):
+        # 加载测试图层
+        vlayer = QgsVectorLayer("../python_cookbook/protected_areas.shp", "protected_areas", "ogr")
+        if not vlayer:
+            self.statusbar.showMessage("Layer failed to load!")
+        else:
+            self.statusbar.showMessage("Layer load Done!")
+            QgsProject.instance().addMapLayer(vlayer)
+            self.gsMapCanvas.setCurrentLayer(vlayer)
+
+    def pie_chart(self):
+        layer = self.gsMapCanvas.currentLayer()
+        if layer is None:
+            self.add_test_layer()
+            layer = self.gsMapCanvas.currentLayer()
+
+        ds = QgsDiagramSettings()
+        ds.enabled = True
+        col1 = Qt.red
+        col2 = Qt.yellow
+        col3 = Qt.blue
+        ds.categoryColors = [col1,col2,col3]
+        ds.categoryAttributes = ['prec_2020','prec_2021','prec_2022']
+        ds.categoryLabels = ['prec_2020','prec_2021','prec_2022']
+        ds.opacity = 1.0
+        ds.size = QSizeF(15,15)
+        dr = QgsLinearlyInterpolatedDiagramRenderer()
+        dr.setLowerValue(0.0)
+        dr.setLowerSize(QSizeF(0.0, 0.0))
+        dr.setUpperValue(100)
+        dr.setUpperSize(QSizeF( 40, 40 ))
+        dr.setClassificationField("prec_2020")
+        p = QgsPieDiagram()
+        dr.setDiagram(p)
+        dr.setDiagramSettings(ds)
+        dls = QgsDiagramLayerSettings()
+        dls.setPlacement(QgsDiagramLayerSettings.OverPoint)
+        dls.setShowAllDiagrams(True)
+        layer.setDiagramLayerSettings(dls)
+        layer.setDiagramRenderer(dr)
 
     def identify_callback(self,feature):
         print("You clicked on feature {}".format(feature.id()))

@@ -61,9 +61,16 @@
     <addaction name="actionGDAL_data_provider_gdal"/>
     <addaction name="actionWMS_data_provider_wms"/>
    </widget>
+   <widget class="QMenu" name="menuDiagrams">
+    <property name="title">
+     <string>Diagrams</string>
+    </property>
+    <addaction name="actionPie_Chart"/>
+   </widget>
    <addaction name="menuProject"/>
    <addaction name="menuAdd_Vector_Layer"/>
    <addaction name="menuAdd_Raster_Layer"/>
+   <addaction name="menuDiagrams"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="dockWidget">
@@ -135,6 +142,11 @@
   <action name="actionWMS_data_provider_wms">
    <property name="text">
     <string>WMS data provider(wms)</string>
+   </property>
+  </action>
+  <action name="actionPie_Chart">
+   <property name="text">
+    <string>Pie Chart</string>
    </property>
   </action>
  </widget>
