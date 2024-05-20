@@ -6,7 +6,7 @@ from qgis.gui import (
     QgsMapLayerComboBox,QgsFieldComboBox,QgsAttributeTableModel,QgsAttributeTableFilterModel,QgsAttributeTableView)
 from qgis.core import (
     QgsLayerTree,QgsLayerTreeGroup,QgsMapLayer,QgsVectorLayer,QgsProject,QgsMapLayerProxyModel,
-    QgsVectorLayerCache,)
+    QgsVectorLayerCache)
 
 
 class MyMenuProvider(QgsLayerTreeViewMenuProvider):
@@ -52,10 +52,15 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
                         menu.addAction(self.actionShowFeatureCount)
                         menu.addAction('Show Fields', self.showlayerfields)
                         menu.addAction('Open Attribute Table',self.showlayertableview)
+                        menu.addAction('Save Feature As...',self.savefeatureas)
                 return menu
 
         except:
             print('menu error')
+
+    def savefeatureas(self):
+        vlayer = self.mapCanvas.currentLayer()
+
 
     def showlayertableview(self):
         vlayer = self.mapCanvas.currentLayer()

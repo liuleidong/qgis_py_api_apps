@@ -1,5 +1,5 @@
 from qgis.core import QgsRectangle,QgsWkbTypes,QgsPointXY
-from qgis.gui import QgsMapTool,QgsMapToolEmitPoint,QgsRubberBand
+from qgis.gui import QgsMapCanvas,QgsMapToolEmitPoint,QgsRubberBand
 
 from PyQt5.QtCore import Qt
 

@@ -2,17 +2,10 @@ from pathlib import Path
 
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QAction
-from PyQt5.QtCore import QVariant
 
 from qgis.PyQt.QtWidgets import QMainWindow,QMenu, QFileDialog
-from qgis.core import (
-    QgsProject,QgsLayerTreeModel,QgsVectorLayer,QgsApplication,QgsDataSourceUri,QgsRasterLayer,
-    QgsField,QgsFeature,QgsGeometry,QgsPointXY)
-from qgis.gui import (
-    QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge,
-    QgsMapToolPan,QgsMapToolZoom,QgsMapToolIdentifyFeature,QgsMapMouseEvent,
-    QgsGui,QgsEditorWidgetRegistry,QgsAttributeDialog,QgsAttributeForm,QgsExpressionSelectionDialog,
-    QgsNewMemoryLayerDialog)
+from qgis.core import QgsProject,QgsLayerTreeModel,QgsVectorLayer,QgsApplication,QgsDataSourceUri,QgsRasterLayer
+from qgis.gui import QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge,QgsMapToolPan,QgsMapToolZoom,QgsMapToolIdentifyFeature,QgsMapMouseEvent
 
 from mymenuprovider import MyMenuProvider
 from ui.MainWindow import Ui_MainWindow
@@ -55,7 +48,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.gsMapToolRectangleMapTool = RectangleMapTool(self.gsMapCanvas)
         self.gsMapCanvas.setMapTool(self.gsMapToolPan)
         # 添加ToolBar用于切换Maptool
-        tb_maptool = self.addToolBar('MapTools')
+        tb = self.addToolBar('MapTools')
         self.actionPan = QAction(QIcon(':/images/mActionPan.png'),'Pan',self)
         self.actionPan.setCheckable(True)
         self.actionPan.setChecked(True)
@@ -68,25 +61,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionRectangle = QAction(QIcon(':/images/mActionAddBasicRectangle.png'),'Rectangle',self)
         self.actionRectangle.setCheckable(True)
 
-        tb_maptool.addAction(self.actionPan)
-        tb_maptool.addAction(self.actionZoomIn)
-        tb_maptool.addAction(self.actionZoomOut)
-        tb_maptool.addAction(self.actionIdentifyFeature)
-        tb_maptool.addAction(self.actionRectangle)
-        tb_maptool.actionTriggered[QAction].connect(self.tbmaptoolbtnpressed)
+        tb.addAction(self.actionPan)
+        tb.addAction(self.actionZoomIn)
+        tb.addAction(self.actionZoomOut)
+        tb.addAction(self.actionIdentifyFeature)
+        tb.addAction(self.actionRectangle)
+        tb.actionTriggered[QAction].connect(self.toolbtnpressed)
 
-        # 选择工具栏
-        tb_selection = self.addToolBar('Selections')
-        self.actionSelectAll = QAction(QIcon(':/images/mActionSelectAll.png'),'Select All',self)
-        self.actionDeselectAll = QAction(QIcon(':/images/mActionDeselectAll.png'),'Deselect All',self)
-        self.actionSelectByValue = QAction(QIcon(':/images/mIconFormSelect.png'),'Select By Value',self)
-        self.actionSelectByExpression = QAction(QIcon(':/images/mIconExpressionSelect.png'), 'Select By Expression', self)
-
-        tb_selection.addAction(self.actionSelectAll)
-        tb_selection.addAction(self.actionDeselectAll)
-        tb_selection.addAction(self.actionSelectByValue)
-        tb_selection.addAction(self.actionSelectByExpression)
-        tb_selection.actionTriggered[QAction].connect(self.tbselectionbtnpressed)
         # 增加右键菜单
         mymenu = MyMenuProvider(self)
         self.gsLayerTreeView.setMenuProvider(mymenu)
@@ -108,9 +89,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # add raster layer菜单
         self.actionGDAL_data_provider_gdal.triggered.connect(self.gdal_addlayer)
         self.actionWMS_data_provider_wms.triggered.connect(self.wms_addlayer)
-        QgsGui.editorWidgetRegistry().initEditors()
 
-    def tbmaptoolbtnpressed(self, a):
+    def toolbtnpressed(self, a):
         self.actionPan.setChecked(False)
         self.actionZoomIn.setChecked(False)
         self.actionZoomOut.setChecked(False)
@@ -134,33 +114,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.actionRectangle.setChecked(True)
             self.gsMapCanvas.setMapTool(self.gsMapToolRectangleMapTool)
 
-    def tbselectionbtnpressed(self, a):
-        layer = self.gsMapCanvas.currentLayer()
-        if layer is None:
-            self.statusbar.showMessage('There is no active layer!!!')
-            return
-        if self.actionSelectAll == a:
-            layer.selectAll()
-        elif self.actionDeselectAll == a:
-            layer.removeSelection()
-        elif self.actionSelectByValue == a:
-            self.attribute_form = QgsAttributeForm(layer)
-            self.attribute_form.setMode(4)
-            self.attribute_form.show()
-        elif self.actionSelectByExpression == a:
-            ed = QgsExpressionSelectionDialog(layer)
-            ed.exec_()
-
     def identify_callback(self,feature):
         print("You clicked on feature {}".format(feature.id()))
         self.statusbar.showMessage("You clicked on feature {}".format(feature.id()))
-        vlayer = self.gsMapCanvas.currentLayer()
-
-        # self.attribute_dialog = QgsAttributeDialog(vlayer,feature,True)
-        # self.attribute_dialog.show()
-        self.attribute_form = QgsAttributeForm(vlayer,feature)
-        self.attribute_form.setMode(0)
-        self.attribute_form.show()
 
     def populateContextMenu(self,menu: QMenu, event: QgsMapMouseEvent):
         subMenu = menu.addMenu('My Menu')
@@ -245,32 +201,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QgsProject.instance().addMapLayer(vlayer)
 
     def memory_addlayer(self):
-        '''
-        # create layer
-        vl = QgsVectorLayer("Point", "temporary_points", "memory")
-        pr = vl.dataProvider()
-        # add fields
-        pr.addAttributes([QgsField("name", QVariant.String),
-                          QgsField("age", QVariant.Int),
-                          QgsField("size", QVariant.Double)])
-        vl.updateFields()  # tell the vector layer to fetch changes from the provider
-
-        # add a feature
-        fet = QgsFeature()
-        fet.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(10, 10)))
-        fet.setAttributes(["Johny", 2, 0.3])
-        pr.addFeatures([fet])
-
-        # update layer's extent when new features have been added
-        # because change of extent in provider is not propagated to the layer
-        vl.updateExtents()
-        self.statusbar.showMessage("Layer memory Done!")
-        QgsProject.instance().addMapLayer(vl)
-        '''
-        ml = QgsNewMemoryLayerDialog.runAndCreateLayer()
-        if ml is not None:
-            QgsProject.instance().addMapLayer(ml)
-
+        pass
 
     def wfs_addlayer(self):
         uri = "https://demo.mapserver.org/cgi-bin/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=ms:cities"
