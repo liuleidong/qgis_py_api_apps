@@ -7,7 +7,8 @@ from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QAction
 from qgis.PyQt.QtWidgets import QMainWindow,QMenu, QFileDialog
 from qgis.core import (
     QgsProject,QgsLayerTreeModel,QgsVectorLayer,QgsApplication,QgsDataSourceUri,QgsRasterLayer,
-    QgsDiagramSettings,QgsLinearlyInterpolatedDiagramRenderer,QgsPieDiagram,QgsDiagramLayerSettings)
+    QgsDiagramSettings,QgsLinearlyInterpolatedDiagramRenderer,QgsDiagramLayerSettings,
+    QgsPieDiagram,QgsTextDiagram,QgsHistogramDiagram,QgsStackedBarDiagram)
 from qgis.gui import QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge,QgsMapToolPan,QgsMapToolZoom,QgsMapToolIdentifyFeature,QgsMapMouseEvent
 
 from mymenuprovider import MyMenuProvider
@@ -94,6 +95,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionWMS_data_provider_wms.triggered.connect(self.wms_addlayer)
         # 图表
         self.actionPie_Chart.triggered.connect(self.pie_chart)
+        self.actionText_Chart.triggered.connect(self.text_chart)
+        self.actionHistogram_Chart.triggered.connect(self.histogram_chart)
+        self.actionStackedBar_Chart.triggered.connect(self.stackedbar_chart)
 
     def toolbtnpressed(self, a):
         self.actionPan.setChecked(False)
@@ -129,7 +133,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QgsProject.instance().addMapLayer(vlayer)
             self.gsMapCanvas.setCurrentLayer(vlayer)
 
-    def pie_chart(self):
+    def prepare_chart(self):
         layer = self.gsMapCanvas.currentLayer()
         if layer is None:
             self.add_test_layer()
@@ -140,17 +144,57 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         col1 = Qt.red
         col2 = Qt.yellow
         col3 = Qt.blue
-        ds.categoryColors = [col1,col2,col3]
-        ds.categoryAttributes = ['prec_2020','prec_2021','prec_2022']
-        ds.categoryLabels = ['prec_2020','prec_2021','prec_2022']
+        ds.categoryColors = [col1, col2, col3]
+        ds.categoryAttributes = ['prec_2020', 'prec_2021', 'prec_2022']
+        ds.categoryLabels = ['prec_2020', 'prec_2021', 'prec_2022']
         ds.opacity = 1.0
-        ds.size = QSizeF(15,15)
+        ds.size = QSizeF(15, 15)
         dr = QgsLinearlyInterpolatedDiagramRenderer()
         dr.setLowerValue(0.0)
         dr.setLowerSize(QSizeF(0.0, 0.0))
         dr.setUpperValue(100)
-        dr.setUpperSize(QSizeF( 40, 40 ))
+        dr.setUpperSize(QSizeF(40, 40))
         dr.setClassificationField("prec_2020")
+        return ds,dr,layer
+
+    def stackedbar_chart(self):
+        ds, dr, layer = self.prepare_chart()
+        s = QgsStackedBarDiagram()
+        dr.setDiagram(s)
+        dr.setDiagramSettings(ds)
+        dls = QgsDiagramLayerSettings()
+        dls.setPlacement(QgsDiagramLayerSettings.OverPoint)
+        dls.setShowAllDiagrams(True)
+        layer.setDiagramLayerSettings(dls)
+        layer.setDiagramRenderer(dr)
+        layer.triggerRepaint()
+
+    def histogram_chart(self):
+        ds, dr, layer = self.prepare_chart()
+        h = QgsHistogramDiagram()
+        dr.setDiagram(h)
+        dr.setDiagramSettings(ds)
+        dls = QgsDiagramLayerSettings()
+        dls.setPlacement(QgsDiagramLayerSettings.OverPoint)
+        dls.setShowAllDiagrams(True)
+        layer.setDiagramLayerSettings(dls)
+        layer.setDiagramRenderer(dr)
+        layer.triggerRepaint()
+
+    def text_chart(self):
+        ds,dr,layer = self.prepare_chart()
+        t = QgsTextDiagram()
+        dr.setDiagram(t)
+        dr.setDiagramSettings(ds)
+        dls = QgsDiagramLayerSettings()
+        dls.setPlacement(QgsDiagramLayerSettings.OverPoint)
+        dls.setShowAllDiagrams(True)
+        layer.setDiagramLayerSettings(dls)
+        layer.setDiagramRenderer(dr)
+        layer.triggerRepaint()
+
+    def pie_chart(self):
+        ds,dr,layer = self.prepare_chart()
         p = QgsPieDiagram()
         dr.setDiagram(p)
         dr.setDiagramSettings(ds)
@@ -159,6 +203,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         dls.setShowAllDiagrams(True)
         layer.setDiagramLayerSettings(dls)
         layer.setDiagramRenderer(dr)
+        layer.triggerRepaint()
 
     def identify_callback(self,feature):
         print("You clicked on feature {}".format(feature.id()))

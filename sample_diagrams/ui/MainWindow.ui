@@ -66,6 +66,9 @@
      <string>Diagrams</string>
     </property>
     <addaction name="actionPie_Chart"/>
+    <addaction name="actionText_Chart"/>
+    <addaction name="actionHistogram_Chart"/>
+    <addaction name="actionStackedBar_Chart"/>
    </widget>
    <addaction name="menuProject"/>
    <addaction name="menuAdd_Vector_Layer"/>
@@ -147,6 +150,21 @@
   <action name="actionPie_Chart">
    <property name="text">
     <string>Pie Chart</string>
+   </property>
+  </action>
+  <action name="actionText_Chart">
+   <property name="text">
+    <string>Text Chart</string>
+   </property>
+  </action>
+  <action name="actionHistogram_Chart">
+   <property name="text">
+    <string>Histogram Chart</string>
+   </property>
+  </action>
+  <action name="actionStackedBar_Chart">
+   <property name="text">
+    <string>StackedBar Chart</string>
    </property>
   </action>
  </widget>
