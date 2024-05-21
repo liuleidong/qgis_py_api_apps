@@ -1,15 +1,16 @@
-
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMenu, QMessageBox,QAction
-from qgis.gui import QgsLayerTreeViewMenuProvider, QgsLayerTreeView, QgsMapCanvas,QgsLayerTreeViewDefaultActions
-from qgis.core import QgsProject,QgsLayerTreeNode,QgsLayerTree,QgsLayerTreeGroup,QgsMapLayer,QgsLayerTreeLayer,QgsVectorLayer
 
-class menuProvider(QgsLayerTreeViewMenuProvider):
-    def __init__(self, mainWindow, *args, **kwargs):
+from qgis.gui import QgsLayerTreeViewMenuProvider,QgsLayerTreeViewDefaultActions,QgsLayerTreeView,QgsMapCanvas
+from qgis.core import QgsLayerTree,QgsLayerTreeGroup,QgsMapLayer,QgsVectorLayer,QgsProject
+
+
+class MyMenuProvider(QgsLayerTreeViewMenuProvider):
+    def __init__(self, MyMainWindow, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.layerTreeView: QgsLayerTreeView = mainWindow.gsLayerTreeView
-        self.mapCanvas: QgsMapCanvas = mainWindow.gsMapCanvas
-        self.mainWindows = mainWindow
+        self.layerTreeView: QgsLayerTreeView = MyMainWindow.gsLayerTreeView
+        self.mapCanvas: QgsMapCanvas = MyMainWindow.gsMapCanvas
+        self.myMainWindows = MyMainWindow
 
     def createContextMenu(self) -> QtWidgets.QMenu:
         try:
@@ -41,9 +42,8 @@ class menuProvider(QgsLayerTreeViewMenuProvider):
                         self.actionZoomToLayers = self.actions.actionZoomToLayers(self.mapCanvas,menu)
                         menu.addAction(self.actionZoomToLayers) #addAction直接传入self.actions.actionZoomToLayers(self.mapCanvas,menu)还不行，原因未知
                     self.actionRemoveGroupOrLayer = self.actions.actionRemoveGroupOrLayer(menu)
-                    menu.addAction(self.actionRemoveGroupOrLayer)
-                    vlayer: QgsVectorLayer = layer
-                    if vlayer.isValid():
+                    menu.addAction(self.actionRemoveGroupOrLayer)                  
+                    if isinstance(layer, QgsVectorLayer) is True:
                         self.actionShowFeatureCount = self.actions.actionShowFeatureCount(menu)
                         menu.addAction(self.actionShowFeatureCount)
                 return menu
