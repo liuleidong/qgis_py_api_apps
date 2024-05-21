@@ -1,3 +1,4 @@
+from functools import partial
 from pathlib import Path
 
 from PyQt5.QtGui import QIcon
@@ -5,6 +6,16 @@ from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QAction
 
 from qgis.PyQt.QtWidgets import QMainWindow,QMenu, QFileDialog
 from qgis.core import QgsProject,QgsLayerTreeModel,QgsVectorLayer,QgsApplication,QgsDataSourceUri,QgsRasterLayer
+from qgis.core import (
+  QgsProcessingContext,
+  QgsTaskManager,
+  QgsTask,
+  QgsProcessingAlgRunnerTask,
+  Qgis,
+  QgsProcessingFeedback,
+  QgsApplication,
+  QgsMessageLog,
+)
 from qgis.gui import QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge,QgsMapToolPan,QgsMapToolZoom,QgsMapToolIdentifyFeature,QgsMapMouseEvent
 
 from mymenuprovider import MyMenuProvider
@@ -89,6 +100,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # add raster layer菜单
         self.actionGDAL_data_provider_gdal.triggered.connect(self.gdal_addlayer)
         self.actionWMS_data_provider_wms.triggered.connect(self.wms_addlayer)
+        # process
+        self.actionrandompointsinextent.triggered.connect(self.process_randompointsinextent)
+        self.actionqgis_randompointsinsidepolygons.triggered.connect(self.process_randompointsinsidepolygons)
+        self.actiongdal_cliprasterbyextent.triggered.connect(self.process_gdalcliprasterbyextent)
 
     def toolbtnpressed(self, a):
         self.actionPan.setChecked(False)
@@ -113,6 +128,81 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         elif self.actionRectangle == a:
             self.actionRectangle.setChecked(True)
             self.gsMapCanvas.setMapTool(self.gsMapToolRectangleMapTool)
+
+    def process_gdalcliprasterbyextent(self):
+        def task_finished(context, successful, results):
+            vlayer = QgsRasterLayer(results['OUTPUT'],'raster')
+            QgsProject.instance().addMapLayer(vlayer)
+
+        alg = QgsApplication.processingRegistry().algorithmById(
+            'gdal:cliprasterbyextent')
+        self.context = QgsProcessingContext()
+        self.feedback = QgsProcessingFeedback()
+        params = {'INPUT':'../python_cookbook/multiband.tif','PROJWIN':'20.434202040,20.457151583,-34.028299615,-34.012483038 [EPSG:4326]','OVERCRS':False,'NODATA':None,'OPTIONS':'','DATA_TYPE':0,'EXTRA':'','OUTPUT':'TEMPORARY_OUTPUT'}
+        self.task = QgsProcessingAlgRunnerTask(alg, params, self.context, self.feedback)
+        self.task.executed.connect(partial(task_finished, self.context))
+        QgsApplication.taskManager().addTask(self.task)
+
+    def process_randompointsinsidepolygons(self):
+        MESSAGE_CATEGORY = 'AlgRunnerTask'
+        def task_finished(context, successful, results):
+            if not successful:
+                QgsMessageLog.logMessage('Task finished unsucessfully',
+                                         MESSAGE_CATEGORY, Qgis.Warning)
+            output_layer = context.getMapLayer(results['OUTPUT'])
+            # because getMapLayer doesn't transfer ownership, the layer will
+            # be deleted when context goes out of scope and you'll get a
+            # crash.
+            # takeMapLayer transfers ownership so it's then safe to add it
+            # to the project and give the project ownership.
+            if output_layer and output_layer.isValid():
+                QgsProject.instance().addMapLayer(
+                    context.takeResultLayer(output_layer.id()))
+
+        alg = QgsApplication.processingRegistry().algorithmById(
+            'qgis:randompointsinsidepolygons')
+        self.context = QgsProcessingContext()
+        self.feedback = QgsProcessingFeedback()
+        params = {'INPUT':'../python_cookbook/protected_areas.shp','STRATEGY':0,'VALUE':10,'MIN_DISTANCE':None,'OUTPUT':'TEMPORARY_OUTPUT'}
+        self.task = QgsProcessingAlgRunnerTask(alg, params, self.context, self.feedback)
+        self.task.executed.connect(partial(task_finished, self.context))
+        QgsApplication.taskManager().addTask(self.task)
+
+    def process_randompointsinextent(self):
+        MESSAGE_CATEGORY = 'AlgRunnerTask'
+        def task_finished(context, successful, results):
+            if not successful:
+                QgsMessageLog.logMessage('Task finished unsucessfully',
+                                         MESSAGE_CATEGORY, Qgis.Warning)
+            output_layer = context.getMapLayer(results['OUTPUT'])
+            # because getMapLayer doesn't transfer ownership, the layer will
+            # be deleted when context goes out of scope and you'll get a
+            # crash.
+            # takeMapLayer transfers ownership so it's then safe to add it
+            # to the project and give the project ownership.
+            if output_layer and output_layer.isValid():
+                QgsProject.instance().addMapLayer(
+                    context.takeResultLayer(output_layer.id()))
+
+        alg = QgsApplication.processingRegistry().algorithmById(
+            'native:randompointsinextent')
+        # `context` and `feedback` need to
+        # live for as least as long as `task`,
+        # otherwise the program will crash.
+        # Initializing them globally is a sure way
+        # of avoiding this unfortunate situation.
+        self.context = QgsProcessingContext()
+        self.feedback = QgsProcessingFeedback()
+        params = {
+            'EXTENT': '0.0,10.0,40,50 [EPSG:4326]',
+            'MIN_DISTANCE': 0.0,
+            'POINTS_NUMBER': 50000,
+            'TARGET_CRS': 'EPSG:4326',
+            'OUTPUT': 'memory:My random points'
+        }
+        self.task = QgsProcessingAlgRunnerTask(alg, params, self.context, self.feedback)
+        self.task.executed.connect(partial(task_finished, self.context))
+        QgsApplication.taskManager().addTask(self.task)
 
     def identify_callback(self,feature):
         print("You clicked on feature {}".format(feature.id()))

@@ -61,9 +61,18 @@
     <addaction name="actionGDAL_data_provider_gdal"/>
     <addaction name="actionWMS_data_provider_wms"/>
    </widget>
+   <widget class="QMenu" name="menuProcessing">
+    <property name="title">
+     <string>Processing</string>
+    </property>
+    <addaction name="actionrandompointsinextent"/>
+    <addaction name="actionqgis_randompointsinsidepolygons"/>
+    <addaction name="actiongdal_cliprasterbyextent"/>
+   </widget>
    <addaction name="menuProject"/>
    <addaction name="menuAdd_Vector_Layer"/>
    <addaction name="menuAdd_Raster_Layer"/>
+   <addaction name="menuProcessing"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="dockWidget">
@@ -135,6 +144,21 @@
   <action name="actionWMS_data_provider_wms">
    <property name="text">
     <string>WMS data provider(wms)</string>
+   </property>
+  </action>
+  <action name="actionrandompointsinextent">
+   <property name="text">
+    <string>native:randompointsinextent</string>
+   </property>
+  </action>
+  <action name="actionqgis_randompointsinsidepolygons">
+   <property name="text">
+    <string>qgis:randompointsinsidepolygons</string>
+   </property>
+  </action>
+  <action name="actiongdal_cliprasterbyextent">
+   <property name="text">
+    <string>gdal:pointsalonglines</string>
    </property>
   </action>
  </widget>

@@ -2,6 +2,9 @@ import platform
 
 from PyQt5.QtCore import Qt
 from qgis.core import QgsApplication
+from qgis.analysis import QgsNativeAlgorithms
+from processing.core.Processing import Processing
+from processing.algs.qgis import QgisAlgorithmProvider
 
 from mymainwindow import MainWindow
 
@@ -17,6 +20,10 @@ if __name__ == '__main__':
     QgsApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     app = QgsApplication([], True)
     app.initQgis()
+    # app.processingRegistry().addProvider(QgsNativeAlgorithms())
+    # app.processingRegistry().addProvider(QgisAlgorithmProvider())
+    Processing.initialize()
+    # app.processingRegistry().addProvider()
     mainWindow = MainWindow()
     mainWindow.show()
     app.exec_()
