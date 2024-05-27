@@ -7,7 +7,8 @@ from qgis.gui import (
     QgsRasterLayerProperties,QgsMultiBandColorRendererWidget)
 from qgis.core import (
 QgsLayerTree,QgsLayerTreeGroup,QgsMapLayer,QgsVectorLayer,QgsProject,
-QgsRasterLayer,QgsColorRampShader,QgsRasterShader,QgsSingleBandPseudoColorRenderer)
+QgsRasterLayer,QgsColorRampShader,QgsRasterShader,QgsSingleBandPseudoColorRenderer,QgsSingleBandGrayRenderer,
+QgsMultiBandColorRenderer,QgsHillshadeRenderer,QgsRasterContourRenderer)
 
 from myrasterdetail import MyRasterDetail
 
@@ -47,7 +48,7 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
                     layer: QgsMapLayer = node.layer()
                     if layer.isValid() and layer.isSpatial():
                         self.actionZoomToLayers = self.actions.actionZoomToLayers(self.mapCanvas,menu)
-                        menu.addAction(self.actionZoomToLayers) #addAction直接传入self.actions.actionZoomToLayers(self.mapCanvas,menu)还不行，原因未知
+                        menu.addAction(self.actionZoomToLayers)
                     self.actionRemoveGroupOrLayer = self.actions.actionRemoveGroupOrLayer(menu)
                     menu.addAction(self.actionRemoveGroupOrLayer)
                     if isinstance(layer,QgsVectorLayer) is True:
@@ -55,8 +56,12 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
                         menu.addAction(self.actionShowFeatureCount)
                     elif isinstance(layer,QgsRasterLayer) is True:
                         menu.addAction('Properties', self.rasterlayerProperties)
+                        menu.addAction('SingleBandGrayRenderer',self.rasterSingleBandGrayRenderer)
                         menu.addAction('SingleBandPseudoColorRenderer',self.rasterSingleBandRenderer)
                         menu.addAction('MultiBandColorRenderer',self.rasterMultiBandColorRenderer)
+                        menu.addAction('HillshadeRenderer',self.rasterHillshadeRenderer)
+                        menu.addAction('ContourRenderer',self.rasterContourRenderer)
+                        menu.addAction('Symbology Dialog',self.rasterShowSymbolWidget)
                 return menu
 
         except:
@@ -69,6 +74,14 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
             # prop.exec()
             detail = MyRasterDetail(layer)
             detail.exec_()
+
+    def rasterSingleBandGrayRenderer(self):
+        rlayer = self.layerTreeView.currentLayer()
+        if rlayer:
+            grayBand = 1;
+            renderer = QgsSingleBandGrayRenderer(rlayer.dataProvider(), grayBand );
+            rlayer.setRenderer(renderer)
+            rlayer.triggerRepaint()
 
     def rasterSingleBandRenderer(self):
         rlayer = self.layerTreeView.currentLayer()
@@ -87,15 +100,33 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
     def rasterMultiBandColorRenderer(self):
         rlayer = self.layerTreeView.currentLayer()
         if rlayer:
-            # self.multi_band_color_renderer_widget = QgsMultiBandColorRendererWidget(rlayer)
-            # self.multi_band_color_renderer_widget.show()
+            renderer = QgsMultiBandColorRenderer(rlayer.dataProvider(),1,2,3)
+            rlayer.setRenderer(renderer)
+            rlayer.triggerRepaint()
+
+    def rasterHillshadeRenderer(self):
+        rlayer = self.layerTreeView.currentLayer()
+        if rlayer:
+            renderer = QgsHillshadeRenderer(rlayer.dataProvider(), 1,45,315)
+            rlayer.setRenderer(renderer)
+            rlayer.triggerRepaint()
+
+    def rasterContourRenderer(self):
+        rlayer = self.layerTreeView.currentLayer()
+        if rlayer:
+            renderer = QgsRasterContourRenderer(rlayer.dataProvider())
+            renderer.setInputBand(1);
+            renderer.setContourInterval(100.00);
+            renderer.setContourIndexInterval(500.00);
+            renderer.setDownscale(4.00);
+            rlayer.setRenderer(renderer)
+            rlayer.triggerRepaint()
+
+    def rasterShowSymbolWidget(self):
+        rlayer = self.layerTreeView.currentLayer()
+        if rlayer:
             prop = QgsRasterLayerProperties(rlayer,self.mapCanvas)
             prop.exec()
-
-    def updateRasterLayerRenderer(self, widget, layer):
-        print("change")
-        layer.setRenderer(widget.renderer())
-        self.mapCanvas.refresh()
 
     def deleteSelectedLayer(self):
         deleteRes = QMessageBox.question(self.mainWindows, '信息', "确定要删除所选图层？", QMessageBox.Yes | QMessageBox.No,
