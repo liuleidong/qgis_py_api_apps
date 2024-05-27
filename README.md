@@ -35,7 +35,5 @@
 ![输入图片说明](https://foruda.gitee.com/images/1716798528404642956/1b8d887e_1547275.png "屏幕截图")
 - 加载矢量图层(按照Data Provider分类：Ogr,Gpx,Delimitedtext,Spatialite,Memory)
 ![输入图片说明](https://foruda.gitee.com/images/1716799103538354990/ebd0554b_1547275.png "屏幕截图")
-- ogr-shapefile
 ![输入图片说明](https://foruda.gitee.com/images/1716799139522917348/21388b75_1547275.png "屏幕截图")
-- gpx
 ![输入图片说明](https://foruda.gitee.com/images/1716799187481445852/d36af863_1547275.png "屏幕截图")
