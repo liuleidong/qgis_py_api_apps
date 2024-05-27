@@ -3,7 +3,8 @@ from PyQt5.QtWidgets import QMenu, QMessageBox, QAction, QDialog, QFormLayout,QT
 
 from qgis.gui import (
     QgsLayerTreeViewMenuProvider,QgsLayerTreeViewDefaultActions,QgsLayerTreeView,QgsMapCanvas,
-    QgsMapLayerComboBox,QgsFieldComboBox,QgsAttributeTableModel,QgsAttributeTableFilterModel,QgsAttributeTableView)
+    QgsMapLayerComboBox,QgsFieldComboBox,QgsAttributeTableModel,QgsAttributeTableFilterModel,QgsAttributeTableView,
+    QgsVectorLayerProperties)
 from qgis.core import (
     QgsLayerTree,QgsLayerTreeGroup,QgsMapLayer,QgsVectorLayer,QgsProject,QgsMapLayerProxyModel,
     QgsVectorLayerCache)
@@ -53,6 +54,7 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
                         menu.addAction('Show Fields', self.showlayerfields)
                         menu.addAction('Open Attribute Table',self.showlayertableview)
                         menu.addAction('Save Feature As...',self.savefeatureas)
+                        menu.addAction('Show Symbology Dialog',self.showSymbologyDialog)
                 return menu
 
         except:
@@ -60,7 +62,7 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
 
     def savefeatureas(self):
         vlayer = self.mapCanvas.currentLayer()
-
+        # QgsVectorLayerSaveAsDialog 这是一个问题，文档上有，但是实际调用却不行
 
     def showlayertableview(self):
         vlayer = self.mapCanvas.currentLayer()
@@ -101,10 +103,12 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
 
         new_dialog.setLayout(layout)
         new_dialog.exec_()
-    def updateRasterLayerRenderer(self, widget, layer):
-        print("change")
-        layer.setRenderer(widget.renderer())
-        self.mapCanvas.refresh()
+
+    def showSymbologyDialog(self):
+        vlayer = self.layerTreeView.currentLayer()
+        if vlayer:
+            prop = QgsVectorLayerProperties(self.mapCanvas,None,vlayer)
+            prop.exec()
 
     def deleteSelectedLayer(self):
         deleteRes = QMessageBox.question(self.mainWindows, '信息', "确定要删除所选图层？", QMessageBox.Yes | QMessageBox.No,
