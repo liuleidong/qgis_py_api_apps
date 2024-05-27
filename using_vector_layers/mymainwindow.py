@@ -6,7 +6,7 @@ from PyQt5.QtCore import QVariant
 
 from qgis.PyQt.QtWidgets import QMainWindow,QMenu, QFileDialog
 from qgis.core import (
-    QgsProject,QgsLayerTreeModel,QgsVectorLayer,QgsApplication,QgsDataSourceUri,QgsRasterLayer,
+    QgsProject,QgsLayerTreeModel,QgsVectorLayer,QgsApplication,QgsDataSourceUri,QgsRasterLayer,QgsDataProvider,
     QgsField,QgsFeature,QgsGeometry,QgsPointXY)
 from qgis.gui import (
     QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge,
@@ -195,12 +195,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.statusbar.showMessage("Layer failed to load!")
         else:
             self.statusbar.showMessage("Layer load Done!")
-            QgsProject.instance().addMapLayer(vlayer)
+            subLayers = vlayer.dataProvider().subLayers()
+            if len(subLayers) > 1:
+                for subLayer in subLayers:
+                    name = subLayer.split(QgsDataProvider.SUBLAYER_SEPARATOR)[1]
+                    uri = "%s|layername=%s" % (file_path, name,)
+                    sub_vlayer = QgsVectorLayer(uri, name, 'ogr')
+                    QgsProject.instance().addMapLayer(sub_vlayer)
+            else:
+                QgsProject.instance().addMapLayer(vlayer)
             self.gsMapCanvas.setCurrentLayer(vlayer)
 
     def ogr_addlayer_dir(self):
         dir_path = QFileDialog.getExistingDirectory(self,"Data Source Manager | Vector","../python_cookbook")
         vlayer = QgsVectorLayer(dir_path, Path(dir_path).stem.__str__(), "ogr")
+        if not vlayer:
+            self.statusbar.showMessage("Layer failed to load!")
+        else:
+            self.statusbar.showMessage("Layer load Done!")
+            QgsProject.instance().addMapLayer(vlayer)
+            self.gsMapCanvas.setCurrentLayer(vlayer)
+
+    def ogr_addlayer_gpkg(self):
+        file_path, _ = QFileDialog.getOpenFileName(self, "Data Source Manager | Vector", "../python_cookbook",
+                                                   "ogr files (*.shp *.gpx *.gpkg *.geojson *.kml *.gml *.dxf)")
+        vlayer = QgsVectorLayer(file_path, Path(file_path).stem.__str__(), "ogr")
         if not vlayer:
             self.statusbar.showMessage("Layer failed to load!")
         else:

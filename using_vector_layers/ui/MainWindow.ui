@@ -137,6 +137,11 @@
     <string>WMS data provider(wms)</string>
    </property>
   </action>
+  <action name="actionGeoPackage">
+   <property name="text">
+    <string>OGR data provider(ogr) | GeoPackage</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="../res/res.qrc"/>

@@ -71,6 +71,8 @@ class Ui_MainWindow(object):
         self.actionGDAL_data_provider_gdal.setObjectName("actionGDAL_data_provider_gdal")
         self.actionWMS_data_provider_wms = QtWidgets.QAction(MainWindow)
         self.actionWMS_data_provider_wms.setObjectName("actionWMS_data_provider_wms")
+        self.actionGeoPackage = QtWidgets.QAction(MainWindow)
+        self.actionGeoPackage.setObjectName("actionGeoPackage")
         self.menuProject.addAction(self.actionNew)
         self.menuProject.addAction(self.actionOpen)
         self.menuProject.addAction(self.actionSave)
@@ -110,4 +112,5 @@ class Ui_MainWindow(object):
         self.actionOGR_data_provider_ogr_Directory.setText(_translate("MainWindow", "OGR data provider(ogr) | Directory"))
         self.actionGDAL_data_provider_gdal.setText(_translate("MainWindow", "GDAL data provider(gdal)"))
         self.actionWMS_data_provider_wms.setText(_translate("MainWindow", "WMS data provider(wms)"))
+        self.actionGeoPackage.setText(_translate("MainWindow", "OGR data provider(ogr) | GeoPackage"))
 import res_rc
