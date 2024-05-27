@@ -31,3 +31,5 @@
 # 源码说明
 ## sample_qgs_vector_raster
 ### 截图
+- 加载qgs(qgis项目文件)
+![输入图片说明](https://foruda.gitee.com/images/1716798528404642956/1b8d887e_1547275.png "屏幕截图")
