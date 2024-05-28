@@ -1,4 +1,4 @@
-# QGIS Python API二次开发示例大全
+# PyQGIS二次开发示例大全
 
 | 名称 | 描述 |
 |--|--|
@@ -150,3 +150,9 @@
 ### 功能截图
 - [x] hello pyqgis
 ![输入图片说明](https://foruda.gitee.com/images/1716893457142151737/8a7e4934_1547275.png "屏幕截图")
+
+# 参考资料
+- [pyqgis_developer_cookbook](https://docs.qgis.org/3.28/en/docs/pyqgis_developer_cookbook)
+- [QGIS Python API](https://qgis.org/pyqgis/master/index.html)
+- [pyqgis-samples](https://github.com/webgeodatavore/pyqgis-samples/)
+- [pyqgis二次开发专栏](https://www.zhihu.com/column/c_1641448508350812161)
