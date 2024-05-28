@@ -1,15 +1,17 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMenu, QMessageBox, QAction, QDialog, QFormLayout,QTableView
+from PyQt5.QtGui import QColor
 
 from qgis.gui import (
     QgsLayerTreeViewMenuProvider,QgsLayerTreeViewDefaultActions,QgsLayerTreeView,QgsMapCanvas,
     QgsMapLayerComboBox,QgsFieldComboBox,QgsAttributeTableModel,QgsAttributeTableFilterModel,QgsAttributeTableView,
     QgsVectorLayerProperties)
-from qgis.core import (
+from qgis.core import (QgsApplication,
     QgsLayerTree,QgsLayerTreeGroup,QgsMapLayer,QgsVectorLayer,QgsProject,QgsMapLayerProxyModel,
-    QgsVectorLayerCache,QgsWkbTypes,
+    QgsVectorLayerCache,QgsWkbTypes,QgsSymbol,
     QgsSingleSymbolRenderer,QgsSvgMarkerSymbolLayer,QgsMarkerSymbol,
-    QgsCategorizedSymbolRenderer,QgsRendererCategory)
+    QgsCategorizedSymbolRenderer,QgsRendererCategory,
+    QgsGraduatedSymbolRenderer,QgsRendererRange)
 
 
 class MyMenuProvider(QgsLayerTreeViewMenuProvider):
@@ -61,6 +63,7 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
                             menu.addAction('Single Symbol - Simple Marker', self.symbol_single_simple_marker)
                             menu.addAction('Single Symbol - Svg Marker', self.symbol_single_svg_marker)
                             menu.addAction('Categorized Symbol',self.symbol_categorized)
+                            menu.addAction('Graduated Symbol', self.symbol_graduated)
                         elif layer.geometryType() == QgsWkbTypes.GeometryType.LineGeometry:
                             menu.addAction('Single Symbol - Interpolated Line',self.symbol_single_interpolated_line)
                         elif layer.geometryType() == QgsWkbTypes.GeometryType.PolygonGeometry:
@@ -164,6 +167,40 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
             categorized_renderer.addCategory(cat3)
             categorized_renderer.addCategory(cat4)
             vlayer.setRenderer(categorized_renderer)
+            vlayer.triggerRepaint()
+
+    def symbol_graduated(self):
+        vlayer = self.layerTreeView.currentLayer()
+        if vlayer:
+            myTargetField = 'ELEV'
+            myRangeList = []
+            myOpacity = 1
+            # Make our first symbol and range...
+            myMin = 0.0
+            myMax = 50.0
+            myLabel = 'Group 1'
+            myColour = QColor('#ffee00')
+            mySymbol1 = QgsSymbol.defaultSymbol(vlayer.geometryType())
+            mySymbol1.setColor(myColour)
+            mySymbol1.setOpacity(myOpacity)
+            myRange1 = QgsRendererRange(myMin, myMax, mySymbol1, myLabel)
+            myRangeList.append(myRange1)
+            # now make another symbol and range...
+            myMin = 50.1
+            myMax = 100
+            myLabel = 'Group 2'
+            myColour = QColor('#00eeff')
+            mySymbol2 = QgsSymbol.defaultSymbol(vlayer.geometryType())
+            mySymbol2.setColor(myColour)
+            mySymbol2.setOpacity(myOpacity)
+            myRange2 = QgsRendererRange(myMin, myMax, mySymbol2, myLabel)
+            myRangeList.append(myRange2)
+            myRenderer = QgsGraduatedSymbolRenderer('', myRangeList)
+            myClassificationMethod = QgsApplication.classificationMethodRegistry().method("EqualInterval")
+            myRenderer.setClassificationMethod(myClassificationMethod)
+            myRenderer.setClassAttribute(myTargetField)
+
+            vlayer.setRenderer(myRenderer)
             vlayer.triggerRepaint()
 
     def symbol_single_interpolated_line(self):
