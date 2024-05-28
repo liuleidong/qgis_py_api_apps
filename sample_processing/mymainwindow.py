@@ -131,7 +131,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def process_gdalcliprasterbyextent(self):
         def task_finished(context, successful, results):
-            vlayer = QgsRasterLayer(results['OUTPUT'],'raster')
+            vlayer = QgsRasterLayer(results['OUTPUT'],'clipped')
             QgsProject.instance().addMapLayer(vlayer)
 
         alg = QgsApplication.processingRegistry().algorithmById(
