@@ -8,10 +8,11 @@ from qgis.gui import (
     QgsVectorLayerProperties)
 from qgis.core import (QgsApplication,
     QgsLayerTree,QgsLayerTreeGroup,QgsMapLayer,QgsVectorLayer,QgsProject,QgsMapLayerProxyModel,
-    QgsVectorLayerCache,QgsWkbTypes,QgsSymbol,
+    QgsVectorLayerCache,QgsWkbTypes,QgsSymbol,QgsLineSymbol,QgsFillSymbol,
     QgsSingleSymbolRenderer,QgsSvgMarkerSymbolLayer,QgsMarkerSymbol,
     QgsCategorizedSymbolRenderer,QgsRendererCategory,
-    QgsGraduatedSymbolRenderer,QgsRendererRange)
+    QgsGraduatedSymbolRenderer,QgsRendererRange,
+    QgsInterpolatedLineSymbolLayer,QgsSVGFillSymbolLayer)
 
 
 class MyMenuProvider(QgsLayerTreeViewMenuProvider):
@@ -204,10 +205,21 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
             vlayer.triggerRepaint()
 
     def symbol_single_interpolated_line(self):
-        pass
+        vlayer = self.layerTreeView.currentLayer()
+        if vlayer:
+            self.interpolLayer = QgsInterpolatedLineSymbolLayer.create({'single_color':'black'})
+            symbol = QgsLineSymbol([self.interpolLayer])
+            vlayer.renderer().setSymbol(symbol)
+            vlayer.triggerRepaint()
 
     def symbol_single_svg_fill(self):
-        pass
+        vlayer = self.layerTreeView.currentLayer()
+        if vlayer:
+            svgpath = '../python_cookbook/test.svg'
+            self.svgLayer = QgsSVGFillSymbolLayer.create({'svgFile':svgpath})
+            symbol = QgsFillSymbol([self.svgLayer])
+            vlayer.renderer().setSymbol(symbol)
+            vlayer.triggerRepaint()
 
     def deleteSelectedLayer(self):
         deleteRes = QMessageBox.question(self.mainWindows, '信息', "确定要删除所选图层？", QMessageBox.Yes | QMessageBox.No,
