@@ -30,7 +30,23 @@
 
 # 源码说明
 ## sample_qgs_vector_raster
-### 截图
+### 功能截图
+- [x] 加载各种格式数据
+    - [x] qgis项目文件
+    - [x] shapefile
+    - [x] gpx
+    - [x] gpkg
+    - [x] geojson
+    - [x] gml
+    - [x] kml
+    - [x] dxf
+    - [x] coverage目录
+    - [x] csv
+    - [x] spalialite数据库
+    - [x] memory
+    - [x] wfs
+    - [x] raster栅格
+    - [x] wms
 - 加载qgs(qgis项目文件)
 ![输入图片说明](https://foruda.gitee.com/images/1716798528404642956/1b8d887e_1547275.png "屏幕截图")
 - 加载矢量图层(按照Data Provider分类：Ogr,Gpx,Delimitedtext,Spatialite,Memory)
@@ -55,8 +71,9 @@
 ![输入图片说明](https://foruda.gitee.com/images/1716859757502377427/85d4d902_1547275.png "屏幕截图")
 
 ## sample_mapcanvas_maptool_layertree
-### 截图
+### 功能截图
 ![输入图片说明](https://foruda.gitee.com/images/1716860053922322717/47e9a9fc_1547275.png "屏幕截图")
 
 ## using_raster_layers
-### 截图
+### 功能截图
+![输入图片说明](https://foruda.gitee.com/images/1716862894695413383/d1bbb9e5_1547275.png "屏幕截图")
