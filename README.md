@@ -1,4 +1,4 @@
-# QGIS Python API二次开发示例大全
+# PyQGIS二次开发示例大全
 
 | 名称 | 描述 |
 |--|--|
@@ -72,8 +72,87 @@
 
 ## sample_mapcanvas_maptool_layertree
 ### 功能截图
+- [x] mapcanvas
+- [x] maptool
+- [x] layertree
+- [x] layertree右键菜单
+- [x] mapcanvas右键菜单
 ![输入图片说明](https://foruda.gitee.com/images/1716860053922322717/47e9a9fc_1547275.png "屏幕截图")
 
 ## using_raster_layers
 ### 功能截图
+- [x] 栅格图层属性显示
+- [x] 栅格图层属性自定义显示
+- [x] 栅格图层符号系统
 ![输入图片说明](https://foruda.gitee.com/images/1716862894695413383/d1bbb9e5_1547275.png "屏幕截图")
+    - QGis栅格图层属性框
+![输入图片说明](https://foruda.gitee.com/images/1716863457928171534/ce23d568_1547275.png "屏幕截图")
+    - 栅格图层自定义属性框
+![输入图片说明](https://foruda.gitee.com/images/1716863511961093868/10042e5f_1547275.png "屏幕截图")
+    - 代码设置符号系统
+![输入图片说明](https://foruda.gitee.com/images/1716863658702779428/eb8aebde_1547275.png "屏幕截图")
+    - gui设置符号系统
+![输入图片说明](https://foruda.gitee.com/images/1716863698103137896/1be44c6f_1547275.png "屏幕截图")
+
+## using_vector_layers
+### 功能截图
+- [x] 显示图层所有字段
+- [x] 显示图层属性表
+- [x] 图层属性、设置符号系统等
+- [x] 代码设置图层符号：点符号、线符号和面符号
+
+    - `QgsFieldComboBox`显示图层字段Fields
+![输入图片说明](https://foruda.gitee.com/images/1716892184070359953/053ff837_1547275.png "屏幕截图")
+    - 使用`QgsAttributeTableModel,QgsAttributeTableView`显示属性表
+![输入图片说明](https://foruda.gitee.com/images/1716892225886167877/d9b397b0_1547275.png "屏幕截图")
+    - 图层属性
+    ![输入图片说明](https://foruda.gitee.com/images/1716892465795361062/1cc2705f_1547275.png "屏幕截图")
+    - 单一符号-简单点符号
+    ![输入图片说明](https://foruda.gitee.com/images/1716892541708340860/e181083f_1547275.png "屏幕截图")
+    - 单一符号-svg点符号
+    ![输入图片说明](https://foruda.gitee.com/images/1716892556660433237/b3672ca9_1547275.png "屏幕截图")
+    - 分类符号
+![输入图片说明](https://foruda.gitee.com/images/1716892619883967224/20efb06d_1547275.png "屏幕截图")
+    - 分级符号
+![输入图片说明](https://foruda.gitee.com/images/1716892642373614326/6ad7f9cd_1547275.png "屏幕截图")
+    - 单一符号-插值线符号
+    ![输入图片说明](https://foruda.gitee.com/images/1716892699529900809/0fd776b6_1547275.png "屏幕截图")
+    - 单一符号-svg面填充符号
+    ![输入图片说明](https://foruda.gitee.com/images/1716892722560425708/9a1fcf1d_1547275.png "屏幕截图")
+
+## sample_diagrams
+### 功能截图
+- [x] 饼图(Pie Diagram)
+- [x] 文本图(Text Diagram)
+- [x] 直方图(Histogram)
+- [x] 分段条形图(StackedBar Diagram)
+
+![输入图片说明](https://foruda.gitee.com/images/1716892945098854624/03025491_1547275.png "屏幕截图")
+![输入图片说明](https://foruda.gitee.com/images/1716892879909004470/62ba8b6b_1547275.png "屏幕截图")
+![输入图片说明](https://foruda.gitee.com/images/1716892892247028335/01ba89c4_1547275.png "屏幕截图")
+![输入图片说明](https://foruda.gitee.com/images/1716892904158196463/87fa500e_1547275.png "屏幕截图")
+![输入图片说明](https://foruda.gitee.com/images/1716892914758183357/3c5203e8_1547275.png "屏幕截图")
+
+## sample_processing
+### 功能截图
+- [x] native:randompointsinextents算法使用示例
+- [x] qgis:randompointsinsidepolygons算法使用示例
+- [x] gdal:cliprasterbyextent算法使用示例
+
+    - 在extent中生成随机点
+![输入图片说明](https://foruda.gitee.com/images/1716893153774439791/3565daa1_1547275.png "屏幕截图")
+    - 在polygons生成随机点
+![输入图片说明](https://foruda.gitee.com/images/1716893247555728292/ab9bca60_1547275.png "屏幕截图")
+    - 栅格图层裁剪
+![输入图片说明](https://foruda.gitee.com/images/1716893378757029904/85bd12a5_1547275.png "屏幕截图")
+
+## hellopyqgis
+### 功能截图
+- [x] hello pyqgis
+![输入图片说明](https://foruda.gitee.com/images/1716893457142151737/8a7e4934_1547275.png "屏幕截图")
+
+# 参考资料
+- [pyqgis_developer_cookbook](https://docs.qgis.org/3.28/en/docs/pyqgis_developer_cookbook)
+- [QGIS Python API](https://qgis.org/pyqgis/master/index.html)
+- [pyqgis-samples](https://github.com/webgeodatavore/pyqgis-samples/)
+- [pyqgis二次开发专栏](https://www.zhihu.com/column/c_1641448508350812161)
