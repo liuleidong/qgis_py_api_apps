@@ -35,5 +35,28 @@
 ![输入图片说明](https://foruda.gitee.com/images/1716798528404642956/1b8d887e_1547275.png "屏幕截图")
 - 加载矢量图层(按照Data Provider分类：Ogr,Gpx,Delimitedtext,Spatialite,Memory)
 ![输入图片说明](https://foruda.gitee.com/images/1716799103538354990/ebd0554b_1547275.png "屏幕截图")
+    - shapefile
 ![输入图片说明](https://foruda.gitee.com/images/1716799139522917348/21388b75_1547275.png "屏幕截图")
+    - gpx
 ![输入图片说明](https://foruda.gitee.com/images/1716799187481445852/d36af863_1547275.png "屏幕截图")
+    - csv
+![输入图片说明](https://foruda.gitee.com/images/1716859294147911386/fbfac846_1547275.png "屏幕截图")
+    - Spatialite
+![输入图片说明](https://foruda.gitee.com/images/1716859412080284053/e0b28343_1547275.png "屏幕截图")
+    - Memory
+![输入图片说明](https://foruda.gitee.com/images/1716859473405484194/85c031fe_1547275.png "屏幕截图")
+    - Wfs
+![输入图片说明](https://foruda.gitee.com/images/1716859542571317785/6ad7ea6c_1547275.png "屏幕截图")
+- 加载栅格图层(按照Data Provider分类：Gdal,Wms)
+![输入图片说明](https://foruda.gitee.com/images/1716859648562875414/03701d25_1547275.png "屏幕截图")
+    - Gdal
+![输入图片说明](https://foruda.gitee.com/images/1716859701161849546/e9b8aad7_1547275.png "屏幕截图")
+    - Wms
+![输入图片说明](https://foruda.gitee.com/images/1716859757502377427/85d4d902_1547275.png "屏幕截图")
+
+## sample_mapcanvas_maptool_layertree
+### 截图
+![输入图片说明](https://foruda.gitee.com/images/1716860053922322717/47e9a9fc_1547275.png "屏幕截图")
+
+## using_raster_layers
+### 截图
