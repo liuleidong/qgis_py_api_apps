@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QAction, QFileDialog
 from qgis.PyQt.QtWidgets import QMainWindow
 
 from qgis.core import QgsProject,QgsLayerTreeModel,QgsVectorLayer,QgsApplication,QgsDataSourceUri,QgsRasterLayer
-from qgis.gui import QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge,QgsMapToolPan,QgsMapToolZoom
+from qgis.gui import QgsLayerTreeView,QgsMapCanvas,QgsLayerTreeMapCanvasBridge,QgsMapToolPan,QgsMapToolZoom,QgsNewMemoryLayerDialog
 
 from mymenuprovider import MyMenuProvider
 from ui.MainWindow import Ui_MainWindow
@@ -155,7 +155,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.gsMapCanvas.setCurrentLayer(vlayer)
 
     def spatialite_addlayer(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Data Source Manager | Delimitedtext", "../python_cookbook",
+        file_path, _ = QFileDialog.getOpenFileName(self, "Data Source Manager | Spatialite", "../python_cookbook",
                                                    "Spatialite files (*.sqlite)")
         uri = QgsDataSourceUri()
         uri.setDatabase(file_path)
@@ -173,7 +173,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QgsProject.instance().addMapLayer(vlayer)
 
     def memory_addlayer(self):
-        pass
+        '''
+        # create layer
+        vl = QgsVectorLayer("Point", "temporary_points", "memory")
+        pr = vl.dataProvider()
+        # add fields
+        pr.addAttributes([QgsField("name", QVariant.String),
+                          QgsField("age", QVariant.Int),
+                          QgsField("size", QVariant.Double)])
+        vl.updateFields()  # tell the vector layer to fetch changes from the provider
+
+        # add a feature
+        fet = QgsFeature()
+        fet.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(10, 10)))
+        fet.setAttributes(["Johny", 2, 0.3])
+        pr.addFeatures([fet])
+
+        # update layer's extent when new features have been added
+        # because change of extent in provider is not propagated to the layer
+        vl.updateExtents()
+        self.statusbar.showMessage("Layer memory Done!")
+        QgsProject.instance().addMapLayer(vl)
+        '''
+        ml = QgsNewMemoryLayerDialog.runAndCreateLayer()
+        if ml is not None:
+            QgsProject.instance().addMapLayer(ml)
 
     def wfs_addlayer(self):
         uri = "https://demo.mapserver.org/cgi-bin/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=ms:cities"

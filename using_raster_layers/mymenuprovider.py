@@ -55,7 +55,8 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
                         self.actionShowFeatureCount = self.actions.actionShowFeatureCount(menu)
                         menu.addAction(self.actionShowFeatureCount)
                     elif isinstance(layer,QgsRasterLayer) is True:
-                        menu.addAction('Properties', self.rasterlayerProperties)
+                        menu.addAction('QGis Properties',self.rasterlayerProperties)
+                        menu.addAction('Custom Properties', self.rasterCustomProperties)
                         menu.addAction('SingleBandGrayRenderer',self.rasterSingleBandGrayRenderer)
                         menu.addAction('SingleBandPseudoColorRenderer',self.rasterSingleBandRenderer)
                         menu.addAction('MultiBandColorRenderer',self.rasterMultiBandColorRenderer)
@@ -70,8 +71,13 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
     def rasterlayerProperties(self):
         layer = self.layerTreeView.currentLayer()
         if layer:
-            # prop = QgsRasterLayerProperties(layer,self.mapCanvas)
-            # prop.exec()
+            prop = QgsRasterLayerProperties(layer,self.mapCanvas)
+            prop.exec()
+
+
+    def rasterCustomProperties(self):
+        layer = self.layerTreeView.currentLayer()
+        if layer:
             detail = MyRasterDetail(layer)
             detail.exec_()
 

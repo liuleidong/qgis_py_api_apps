@@ -7,7 +7,9 @@ from qgis.gui import (
     QgsVectorLayerProperties)
 from qgis.core import (
     QgsLayerTree,QgsLayerTreeGroup,QgsMapLayer,QgsVectorLayer,QgsProject,QgsMapLayerProxyModel,
-    QgsVectorLayerCache)
+    QgsVectorLayerCache,QgsWkbTypes,
+    QgsSingleSymbolRenderer,QgsSvgMarkerSymbolLayer,QgsMarkerSymbol,
+    QgsCategorizedSymbolRenderer,QgsRendererCategory)
 
 
 class MyMenuProvider(QgsLayerTreeViewMenuProvider):
@@ -55,6 +57,14 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
                         menu.addAction('Open Attribute Table',self.showlayertableview)
                         menu.addAction('Save Feature As...',self.savefeatureas)
                         menu.addAction('Show Symbology Dialog',self.showSymbologyDialog)
+                        if layer.geometryType() == QgsWkbTypes.GeometryType.PointGeometry:
+                            menu.addAction('Single Symbol - Simple Marker', self.symbol_single_simple_marker)
+                            menu.addAction('Single Symbol - Svg Marker', self.symbol_single_svg_marker)
+                            menu.addAction('Categorized Symbol',self.symbol_categorized)
+                        elif layer.geometryType() == QgsWkbTypes.GeometryType.LineGeometry:
+                            menu.addAction('Single Symbol - Interpolated Line',self.symbol_single_interpolated_line)
+                        elif layer.geometryType() == QgsWkbTypes.GeometryType.PolygonGeometry:
+                            menu.addAction('Single Symbol - Svg Fill', self.symbol_single_svg_fill)
                 return menu
 
         except:
@@ -63,6 +73,7 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
     def savefeatureas(self):
         vlayer = self.mapCanvas.currentLayer()
         # QgsVectorLayerSaveAsDialog 这是一个问题，文档上有，但是实际调用却不行
+        print(vlayer.geometryType())
 
     def showlayertableview(self):
         vlayer = self.mapCanvas.currentLayer()
@@ -109,6 +120,57 @@ class MyMenuProvider(QgsLayerTreeViewMenuProvider):
         if vlayer:
             prop = QgsVectorLayerProperties(self.mapCanvas,None,vlayer)
             prop.exec()
+
+    def symbol_single_simple_marker(self):
+        vlayer = self.layerTreeView.currentLayer()
+        if vlayer:
+            symbol = QgsMarkerSymbol.createSimple({'name': 'square', 'color': 'red'})
+            vlayer.renderer().setSymbol(symbol)
+            # show the change
+            vlayer.triggerRepaint()
+
+    def symbol_single_svg_marker(self):
+        vlayer = self.layerTreeView.currentLayer()
+        if vlayer:
+            svgpath = '../python_cookbook/test.svg'
+            # svglayer = QgsSvgMarkerSymbolLayer(svgpath,size=12)
+            self.svglayer = QgsSvgMarkerSymbolLayer.create({'name':svgpath,'size':'12','outline_color':'red'})
+            symbol = QgsMarkerSymbol([self.svglayer])
+            vlayer.renderer().setSymbol(symbol)
+            # show the change
+            vlayer.triggerRepaint()
+
+    def symbol_categorized(self):
+        vlayer = self.layerTreeView.currentLayer()
+        if vlayer:
+            self.svglayer1 = QgsSvgMarkerSymbolLayer.create({'name': "../python_cookbook/svg/airport.svg", 'size': '4'})
+            self.symbol1 = QgsMarkerSymbol([self.svglayer1])
+            self.svglayer2 = QgsSvgMarkerSymbolLayer.create({'name': "../python_cookbook/svg/airport1.svg", 'size': '4'})
+            self.symbol2 = QgsMarkerSymbol([self.svglayer2])
+            self.svglayer3 = QgsSvgMarkerSymbolLayer.create({'name': "../python_cookbook/svg/airport3.svg", 'size': '4'})
+            self.symbol3 = QgsMarkerSymbol([self.svglayer3])
+            self.svglayer4 = QgsSvgMarkerSymbolLayer.create({'name': "../python_cookbook/svg/airport2.svg", 'size': '4'})
+            self.symbol4 = QgsMarkerSymbol([self.svglayer4])
+
+            cat1 = QgsRendererCategory('Civilian/Public', self.symbol1, 'Civilian/Public')
+            cat2 = QgsRendererCategory('Joint Military/Civilian', self.symbol2, 'Joint Military/Civilian')
+            cat3 = QgsRendererCategory('Military', self.symbol3, 'Military')
+            cat4 = QgsRendererCategory('Other', self.symbol4, 'Other')
+
+            categorized_renderer = QgsCategorizedSymbolRenderer()
+            categorized_renderer.setClassAttribute("USE")
+            categorized_renderer.addCategory(cat1)
+            categorized_renderer.addCategory(cat2)
+            categorized_renderer.addCategory(cat3)
+            categorized_renderer.addCategory(cat4)
+            vlayer.setRenderer(categorized_renderer)
+            vlayer.triggerRepaint()
+
+    def symbol_single_interpolated_line(self):
+        pass
+
+    def symbol_single_svg_fill(self):
+        pass
 
     def deleteSelectedLayer(self):
         deleteRes = QMessageBox.question(self.mainWindows, '信息', "确定要删除所选图层？", QMessageBox.Yes | QMessageBox.No,

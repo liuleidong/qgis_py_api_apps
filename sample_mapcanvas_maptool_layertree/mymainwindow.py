@@ -83,6 +83,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionZoomOut.setChecked(False)
         self.actionZoomIn.setChecked(False)
         self.actionIdentifyFeature.setChecked(False)
+        self.actionRectangle.setChecked(False)
+
         if self.actionPan == a:
             self.actionPan.setChecked(True)
             self.gsMapCanvas.setMapTool(self.gsMapToolPan)
