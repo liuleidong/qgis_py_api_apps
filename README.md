@@ -78,6 +78,7 @@
 - [x] layertree右键菜单
 - [x] mapcanvas右键菜单
 ![输入图片说明](https://foruda.gitee.com/images/1716860053922322717/47e9a9fc_1547275.png "屏幕截图")
+![输入图片说明](https://foruda.gitee.com/images/1716944627713788445/da543c99_1547275.gif "maptool.gif")
 
 ## using_raster_layers
 ### 功能截图
@@ -86,11 +87,15 @@
 - [x] 栅格图层符号系统
 ![输入图片说明](https://foruda.gitee.com/images/1716862894695413383/d1bbb9e5_1547275.png "屏幕截图")
     - QGis栅格图层属性框
-![输入图片说明](https://foruda.gitee.com/images/1716863457928171534/ce23d568_1547275.png "屏幕截图")
+![输入图片说明](https://foruda.gitee.com/images/1716944864077672171/32b6784a_1547275.gif "rasterqgisproperty.gif")
     - 栅格图层自定义属性框
-![输入图片说明](https://foruda.gitee.com/images/1716863511961093868/10042e5f_1547275.png "屏幕截图")
+![输入图片说明](https://foruda.gitee.com/images/1716944904009711546/45855420_1547275.gif "rastercustomproperty.gif")
     - 代码设置符号系统
-![输入图片说明](https://foruda.gitee.com/images/1716863658702779428/eb8aebde_1547275.png "屏幕截图")
+![输入图片说明](https://foruda.gitee.com/images/1716944944631402762/099a14a7_1547275.gif "rastersinglegray.gif")
+![输入图片说明](https://foruda.gitee.com/images/1716946233834224530/da03512b_1547275.gif "rastersinglePseudo.gif")
+![输入图片说明](https://foruda.gitee.com/images/1716945079913198979/ca62255b_1547275.gif "rastersinglemulti.gif")
+![输入图片说明](https://foruda.gitee.com/images/1716945032755943982/de9e68b7_1547275.gif "hillshade.gif")
+![输入图片说明](https://foruda.gitee.com/images/1716945057021565954/cdb7c8bf_1547275.gif "courd.gif")
     - gui设置符号系统
 ![输入图片说明](https://foruda.gitee.com/images/1716863698103137896/1be44c6f_1547275.png "屏幕截图")
 
@@ -98,28 +103,34 @@
 ### 功能截图
 - [x] 显示图层所有字段
 - [x] 显示图层属性表
+- [x] 选择feature
 - [x] 图层属性、设置符号系统等
 - [x] 代码设置图层符号：点符号、线符号和面符号
 
     - `QgsFieldComboBox`显示图层字段Fields
-![输入图片说明](https://foruda.gitee.com/images/1716892184070359953/053ff837_1547275.png "屏幕截图")
+![输入图片说明](https://foruda.gitee.com/images/1716945893836059738/3f639010_1547275.gif "vectorshowfields.gif")
     - 使用`QgsAttributeTableModel,QgsAttributeTableView`显示属性表
-![输入图片说明](https://foruda.gitee.com/images/1716892225886167877/d9b397b0_1547275.png "屏幕截图")
+![输入图片说明](https://foruda.gitee.com/images/1716945911471790958/487a6353_1547275.gif "vectorshowattribute.gif")
     - 图层属性
     ![输入图片说明](https://foruda.gitee.com/images/1716892465795361062/1cc2705f_1547275.png "屏幕截图")
     - 单一符号-简单点符号
-    ![输入图片说明](https://foruda.gitee.com/images/1716892541708340860/e181083f_1547275.png "屏幕截图")
+![输入图片说明](https://foruda.gitee.com/images/1716945979515771384/2b65cfaa_1547275.gif "vectorsymbolsimplemarker.gif")
     - 单一符号-svg点符号
-    ![输入图片说明](https://foruda.gitee.com/images/1716892556660433237/b3672ca9_1547275.png "屏幕截图")
+![输入图片说明](https://foruda.gitee.com/images/1716945993774522985/997f2f62_1547275.gif "vectorsymbolsvgmarker.gif")
     - 分类符号
-![输入图片说明](https://foruda.gitee.com/images/1716892619883967224/20efb06d_1547275.png "屏幕截图")
+![输入图片说明](https://foruda.gitee.com/images/1716946010850094180/98fd8952_1547275.gif "vectorsymbolcatotry.gif")
     - 分级符号
-![输入图片说明](https://foruda.gitee.com/images/1716892642373614326/6ad7f9cd_1547275.png "屏幕截图")
+![输入图片说明](https://foruda.gitee.com/images/1716946023336028520/01bf40fc_1547275.gif "vectorsymbolgradute.gif")
     - 单一符号-插值线符号
-    ![输入图片说明](https://foruda.gitee.com/images/1716892699529900809/0fd776b6_1547275.png "屏幕截图")
+![输入图片说明](https://foruda.gitee.com/images/1716946039141671027/88d1a91a_1547275.gif "vectorsymbolline.gif")
     - 单一符号-svg面填充符号
-    ![输入图片说明](https://foruda.gitee.com/images/1716892722560425708/9a1fcf1d_1547275.png "屏幕截图")
-
+![输入图片说明](https://foruda.gitee.com/images/1716946050959929571/9f280ff8_1547275.gif "vectorsymbolpolygon.gif")
+    - feature全选取消
+    ![输入图片说明](https://foruda.gitee.com/images/1716946172217442153/ca8939ed_1547275.gif "vectorselectall.gif")
+    - select by value
+    ![输入图片说明](https://foruda.gitee.com/images/1716946189954097816/759a53e2_1547275.gif "vectorselectbyvalue.gif")
+    - select by expression
+    ![输入图片说明](https://foruda.gitee.com/images/1716946215307849464/9fba1b58_1547275.gif "vectorselectbyexpression.gif")
 ## sample_diagrams
 ### 功能截图
 - [x] 饼图(Pie Diagram)
